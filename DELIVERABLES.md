@@ -12,7 +12,7 @@ Legend: **Type** = Quantitative / Qualitative · **Status** = current state in t
 
 | ID | Part | Deliverable | Acceptance criteria | Status |
 |----|------|-------------|---------------------|--------|
-| N1 | 1 | Create **≥ 5 new node types** to demonstrate the abstraction | At least 5 distinct new nodes exist and are usable on the canvas | ✅ 7 delivered (Condition, Merge, Filter List, Semantic Search, File Loader, Web Scraper, Note) |
+| N1 | 1 | Create **≥ 5 new node types** to demonstrate the abstraction | At least 5 distinct new nodes exist and are usable on the canvas | ✅ 7 delivered (Condition, Merge, Filter List, Data Room Q&A, Document Loader, Company Research, Note); inputs refocused for PE workflows |
 | N2 | 3 | Text node **width** changes as more text is entered | Node width visibly adjusts to input | ✅ Done |
 | N3 | 3 | Text node **height** changes as more text is entered | Node height grows to fit input (textarea auto-resize) | ✅ Done |
 | N4 | 3 | A **new left-side Handle per `{{ variable }}`** | One input handle created for each variable in the text | ✅ Done |

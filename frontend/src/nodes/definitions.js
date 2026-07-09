@@ -73,7 +73,7 @@ export const nodeDefinitions = [
       { id: 'true', type: 'source', side: 'right', label: 'True' },
       { id: 'false', type: 'source', side: 'right', label: 'False' },
     ],
-    fields: [{ name: 'condition', label: 'Condition', kind: 'text', placeholder: 'e.g. score > 0.5' }],
+    fields: [{ name: 'condition', label: 'Condition', kind: 'text', placeholder: 'e.g. deal score >= 7' }],
   },
   {
     // multiple INPUT handles
@@ -104,49 +104,50 @@ export const nodeDefinitions = [
     ],
   },
   {
-    // many + varied field kinds (select + number + slider)
+    // Ask a question over a data room / knowledge base and get a *sourced* answer
+    // (the thing PE actually values). Two outputs: the answer + its citations.
     type: 'semanticSearch',
-    title: 'Semantic Search',
+    title: 'Data Room Q&A',
     category: 'knowledge',
     icon: 'Search',
     handles: [
-      { id: 'query', type: 'target', side: 'left' },
-      { id: 'results', type: 'source', side: 'right' },
+      { id: 'question', type: 'target', side: 'left' },
+      { id: 'answer', type: 'source', side: 'right', label: 'Answer' },
+      { id: 'sources', type: 'source', side: 'right', label: 'Sources' },
     ],
     fields: [
-      { name: 'kb', label: 'Knowledge Base', kind: 'select', options: ['Docs', 'Support KB', 'Product KB'], default: 'Docs' },
-      { name: 'topK', label: 'Top K', kind: 'number', default: '3', min: 1, max: 20 },
-      { name: 'threshold', label: 'Threshold', kind: 'slider', default: '0.7', min: 0, max: 1, step: 0.05 },
+      { name: 'source', label: 'Search in', kind: 'select', options: ['Data Room', 'Knowledge Base', 'Financials', 'Legal Docs'], default: 'Data Room' },
+      { name: 'citations', label: 'Citations', kind: 'number', default: '3', min: 1, max: 10 },
     ],
   },
   {
-    // file data flow + checkbox field
+    // Load a deal document (CIM, financials, contract...) into the pipeline.
+    // A source node: outputs the document for downstream extraction/Q&A.
     type: 'fileLoader',
-    title: 'File Loader',
+    title: 'Document Loader',
     category: 'data',
     icon: 'FileUp',
     handles: [
-      { id: 'file', type: 'target', side: 'left' },
-      { id: 'output', type: 'source', side: 'right' },
+      { id: 'document', type: 'source', side: 'right' },
     ],
     fields: [
-      { name: 'fileType', label: 'File Type', kind: 'select', options: ['PDF', 'CSV', 'Image', 'Text'], default: 'PDF' },
-      { name: 'ocr', label: 'Enable OCR', kind: 'checkbox', default: false },
+      { name: 'docType', label: 'Document', kind: 'select', options: ['CIM', 'Financials', 'Contract', 'Data Room', 'Other'], default: 'CIM' },
+      { name: 'ocr', label: 'Scan (OCR)', kind: 'checkbox', default: false },
     ],
   },
   {
-    // realistic data-loader node
+    // Enrich/research a target company from external sources (sourcing stage).
     type: 'webScraper',
-    title: 'Web Scraper',
+    title: 'Company Research',
     category: 'data',
-    icon: 'Globe',
+    icon: 'Building2',
     handles: [
-      { id: 'trigger', type: 'target', side: 'left' },
-      { id: 'output', type: 'source', side: 'right' },
+      { id: 'company', type: 'target', side: 'left' },
+      { id: 'profile', type: 'source', side: 'right' },
     ],
     fields: [
-      { name: 'url', label: 'URL', kind: 'text', placeholder: 'https://example.com' },
-      { name: 'depth', label: 'Crawl Depth', kind: 'number', default: '1', min: 1, max: 5 },
+      { name: 'company', label: 'Company', kind: 'text', placeholder: 'Name or website' },
+      { name: 'sources', label: 'Sources', kind: 'select', options: ['Web', 'News', 'Filings', 'All'], default: 'All' },
     ],
   },
   {

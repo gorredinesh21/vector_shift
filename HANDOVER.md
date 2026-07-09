@@ -96,16 +96,20 @@ Field `kind`s supported: `text | textarea | select | number | slider | checkbox`
 
 ### The 11 node types now available
 - **Originals (refactored):** Input, Output, LLM, Text
-- **New:** Condition (2 outputs), Merge (2 inputs), Filter List, Semantic Search (select+number+slider),
-  File Loader (checkbox), Web Scraper, Note (0 handles)
+- **New (PE-flavored):** Condition (2 outputs), Merge (2 inputs), Filter List, **Data Room Q&A**
+  (question → answer + sources), **Document Loader** (CIM/Financials/…), **Company Research**, Note (0 handles)
+
+> Node inputs/outputs were refocused for VectorShift's real market — **private-equity workflows**:
+> Semantic Search → **Data Room Q&A** (question in, sourced answer out; dropped the engineer-y
+> `threshold`); File Loader → **Document Loader**; Web Scraper → **Company Research**.
 
 ### How to test Part 1
 1. `cd frontend && npm start`, open http://localhost:3000.
 2. **Drag each of the 11 chips** from the toolbar onto the canvas — every one should render with its
    title, icon, fields, and handles.
 3. **Connect nodes:** drag from a right-side (source) handle to a left-side (target) handle — a wire forms.
-4. **Field types:** on **Semantic Search** confirm the dropdown, number, and slider all work; on
-   **File Loader** the OCR checkbox toggles; on **Note** there are no handles (edge case).
+4. **Field types:** on **Data Room Q&A** confirm the dropdown + number work (and it has two outputs:
+   Answer, Sources); on **Document Loader** the OCR checkbox toggles; on **Note** there are no handles.
 5. **Branching:** the **Condition** node shows two labelled output handles (True/False); **Merge** shows
    two labelled inputs.
 6. **Abstraction proof:** open `nodes/definitions.js` — every node is a config entry, and none of the 7

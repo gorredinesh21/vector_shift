@@ -126,9 +126,9 @@ Wire the frontend to the backend end-to-end:
   1. **Condition (If/Else)** — 1 input → 2 outputs *(tests multiple output handles / branching)*
   2. **Merge** — 2+ inputs → 1 output *(tests multiple input handles)*
   3. **Filter List** — list in/out + predicate *(tests list-type nodes)*
-  4. **Semantic Search** — KB dropdown + top-K + threshold *(tests many/varied field kinds)*
-  5. **File Loader** — file type dropdown + OCR checkbox *(tests file data flow + checkbox field)*
-  6. **Web Scraper** — URL + depth *(realistic data-loader node)*
+  4. **Data Room Q&A** — question → answer + sources; source dropdown + citations *(PE: sourced Q&A over a data room)*
+  5. **Document Loader** — doc type (CIM/Financials/…) + OCR checkbox *(PE: load a deal document)*
+  6. **Company Research** — company + sources dropdown *(PE: enrich a target company)*
   7. **Note / Sticky** — textarea, **0 handles** *(tests the empty / no-handles edge case)*
 
 ## ✅ Deliverables Checklist
