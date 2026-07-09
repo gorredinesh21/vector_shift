@@ -179,26 +179,29 @@ code {
   border-radius: var(--radius);
   box-shadow: var(--glass-shadow);
   color: var(--text);
+  /* base text size scales with the node's size (set by BaseNode's ResizeObserver) */
+  font-size: calc(13px * var(--node-scale, 1));
 }
 
 .vs-node__title {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 14px;
-  font-size: 14px;
+  gap: 0.6em;
+  padding: 0.77em 1.08em;
+  font-size: 1.08em;
   font-weight: 600;
   border-bottom: 1px solid var(--glass-border);
 }
 .vs-node__icon { color: var(--cat, var(--accent)); flex: none; }
+.vs-node__title svg { width: 1.15em; height: 1.15em; }
 
 .vs-node__body {
   flex: 1;
   min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 14px;
+  gap: 0.92em;
+  padding: 1.08em;
 }
 
 /* NodeResizer handles/border, themed to match the accent */
@@ -219,16 +222,16 @@ code {
 .vs-field {
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  font-size: 12px;
+  gap: 0.38em;
+  font-size: 0.92em;
 }
-.vs-field--inline { flex-direction: row; align-items: center; gap: 8px; }
+.vs-field--inline { flex-direction: row; align-items: center; gap: 0.6em; }
 .vs-field__label { color: var(--text-muted); font-weight: 500; }
 
 .vs-input {
   width: 100%;
-  padding: 7px 10px;
-  font-size: 13px;
+  padding: 0.54em 0.77em;
+  font-size: 1em;
   font-family: inherit;
   color: var(--text);
   background: var(--field-bg);
@@ -247,9 +250,9 @@ select.vs-input { cursor: pointer; }
 .vs-slider { display: flex; align-items: center; gap: 8px; }
 .vs-slider input[type='range'] { flex: 1; accent-color: var(--accent); }
 .vs-slider__val {
-  font-size: 12px;
+  font-size: 0.92em;
   color: var(--text-muted);
-  min-width: 30px;
+  min-width: 2.3em;
   text-align: right;
 }
 input[type='checkbox'] { accent-color: var(--accent); width: 15px; height: 15px; }
@@ -272,7 +275,7 @@ input[type='checkbox'] { accent-color: var(--accent); width: 15px; height: 15px;
 
 .vs-handle-label {
   position: absolute;
-  font-size: 10px;
+  font-size: 0.77em;
   color: var(--text-muted);
   transform: translateY(-50%);
   pointer-events: none;

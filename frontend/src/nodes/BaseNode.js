@@ -8,7 +8,7 @@
 // to take over the body for nodes too custom for plain fields (e.g. the Text
 // node's dynamic-variable logic in Part 3).
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Handle, Position, NodeResizer } from 'reactflow';
 import * as Icons from 'lucide-react';
 import { useStore } from '../store';
@@ -24,9 +24,28 @@ const sideToPosition = {
 // allow a field default to be a function of the node id (e.g. auto-naming inputs)
 const resolveDefault = (def, id) => (typeof def === 'function' ? def(id) : def);
 
+// default node footprint; content scales relative to this as the node grows
+const BASE_W = 220;
+const BASE_H = 110;
+
 export function BaseNode({ id, data, config }) {
   const updateNodeField = useStore((s) => s.updateNodeField);
   const takeSnapshot = useStore((s) => s.takeSnapshot);
+  const rootRef = useRef(null);
+
+  // scale the node's text/content with its size, so a bigger box = bigger text
+  useEffect(() => {
+    const el = rootRef.current;
+    if (!el || typeof ResizeObserver === 'undefined') return;
+    const ro = new ResizeObserver(() => {
+      const w = el.offsetWidth;
+      const h = el.offsetHeight;
+      const scale = Math.max(0.85, Math.min(Math.sqrt((w / BASE_W) * (h / BASE_H)), 2.6));
+      el.style.setProperty('--node-scale', scale.toFixed(3));
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   const [values, setValues] = useState(() => {
     const init = {};
@@ -50,7 +69,7 @@ export function BaseNode({ id, data, config }) {
   const Icon = config.icon && Icons[config.icon] ? Icons[config.icon] : null;
 
   return (
-    <div className={`vs-node vs-node--${config.category || 'default'}`}>
+    <div ref={rootRef} className={`vs-node vs-node--${config.category || 'default'}`}>
       <NodeResizer
         minWidth={180}
         minHeight={70}
