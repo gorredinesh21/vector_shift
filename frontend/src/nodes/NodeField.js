@@ -30,7 +30,7 @@ export function NodeField({ field, value, onChange }) {
       case 'textarea':
         return (
           <textarea
-            className="vs-input"
+            className="vs-input nodrag"
             value={value}
             placeholder={placeholder}
             onChange={(e) => onChange(e.target.value)}
@@ -39,7 +39,7 @@ export function NodeField({ field, value, onChange }) {
 
       case 'select':
         return (
-          <select className="vs-input" value={value} onChange={(e) => onChange(e.target.value)}>
+          <select className="vs-input nodrag" value={value} onChange={(e) => onChange(e.target.value)}>
             {(options || []).map((o) => (
               <option key={o} value={o}>{o}</option>
             ))}
@@ -49,7 +49,7 @@ export function NodeField({ field, value, onChange }) {
       case 'number':
         return (
           <input
-            className="vs-input"
+            className="vs-input nodrag"
             type="number"
             value={value}
             min={min}
@@ -61,7 +61,7 @@ export function NodeField({ field, value, onChange }) {
 
       case 'slider':
         return (
-          <div className="vs-slider">
+          <div className="vs-slider nodrag">
             <input
               type="range"
               value={value}
@@ -77,6 +77,7 @@ export function NodeField({ field, value, onChange }) {
       case 'checkbox':
         return (
           <input
+            className="nodrag"
             type="checkbox"
             checked={!!value}
             onChange={(e) => onChange(e.target.checked)}
@@ -87,7 +88,7 @@ export function NodeField({ field, value, onChange }) {
       default:
         return (
           <input
-            className="vs-input"
+            className="vs-input nodrag"
             type="text"
             value={value}
             placeholder={placeholder}

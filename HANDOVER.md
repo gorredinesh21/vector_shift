@@ -12,7 +12,12 @@ Living log of what's built, how to run it, and how to test it. Updated after eac
 | Part 1 — Node abstraction + 4 refactors + 7 new nodes | ✅ Done |
 | Part 3 — Text node logic (resize + `{{ }}` handles) | ✅ Done |
 | Part 4 — Backend DAG + submit + glass modal | ✅ Done |
-| Part 2 — Styling (light glass / maroon) | ⏳ Pending |
+| Part 2 — Styling (light glass / maroon) | ✅ Done |
+
+**All four parts complete.**
+
+> ⚠️ Stale servers: earlier sessions left processes on ports **3000** and **8000**. If the app or
+> backend seems to run "old" code, stop those first (`netstat -ano | findstr :3000` → `taskkill /PID <pid> /F`).
 
 ---
 
@@ -183,6 +188,49 @@ counts + DAG status, shown in a themed modal.
 
 ---
 
-## Next up
-**Part 2** — apply the light-glass / warm-maroon design system (see `EXECUTION.md` §2 tokens) across
-the header, bottom toolbar, nodes, handles, edges, submit button, and result modal.
+## Part 2 — Styling ✅
+
+### What was built
+A unified **light-glass / warm-maroon** design system applied across the whole app.
+
+- **`index.css`** — the full system: CSS-variable tokens (accent maroon scale, warm gradient, glass
+  recipe, per-category colors), plus styles for every surface. Inter font loaded via Google Fonts.
+- **`App.js`** — restructured into a 3-row layout: slim glass **header** (VectorShift wordmark +
+  Submit button) · flex-fill **canvas stage** · **bottom toolbar** (the node palette).
+- **Nodes** — frosted-glass cards, category-tinted icon + left accent bar, airy padding, styled fields
+  (text/select/number/slider/checkbox) with maroon focus rings.
+- **Handles** — round; source (right) = maroon, target (left) = warm slate; hover glow. Text-node
+  variable handles get small muted labels.
+- **Edges/wires** — maroon, brighter on hover/select.
+- **Submit button + result modal** — maroon gradient button; glass modal with big stat tiles
+  (Nodes / Edges / Is-DAG) and smooth fade/pop animation.
+- **React Flow chrome** — Controls / MiniMap themed to match; attribution hidden; canvas transparent
+  so the warm gradient shows through a glass-framed stage.
+- Interactive inputs marked `nodrag` so typing/sliding doesn't drag the node.
+
+**Readability guardrail honored:** cards use high-opacity white glass + near-charcoal text; maroon is
+an accent only (buttons, wires, focus, active) — never behind body text.
+
+### Layout note
+`ui.js` sets the canvas wrapper to `70vh` inline; `index.css` overrides it to fill the flex stage
+(`.vs-stage > div { height:100% !important }`) so the canvas is fully responsive without editing `ui.js`.
+
+### How to test Part 2
+1. Run frontend + backend (see "How to run"). Open http://localhost:3000.
+2. Confirm: warm light-glass look, header wordmark + maroon **Submit Pipeline** button, node palette
+   along the **bottom**.
+3. Drop nodes — glass cards with category-colored icons/left bars; drag wires — maroon animated edges.
+4. Focus a field — maroon focus ring; hover a handle — maroon glow; hover a chip — it lifts.
+5. Click Submit — a glass modal with stat tiles animates in.
+
+### Verification done
+- `npm run build` compiles cleanly; dev server compiles and serves **HTTP 200**.
+- Note: no browser/screenshot tool was available in the build environment, so the *visual* result
+  wasn't screenshot-verified here — it's built to the `EXECUTION.md` §2 token spec. Please eyeball it
+  once in your browser.
+
+---
+
+## Project is feature-complete
+All four assessment parts are implemented, committed, and pushed. Suggested final step before
+submitting: run both servers, click through the test steps in each part above, and skim the diff.

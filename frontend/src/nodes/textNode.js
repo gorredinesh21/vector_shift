@@ -50,7 +50,7 @@ export function TextNodeBody({ id, values, setField }) {
         <span className="vs-field__label">Text</span>
         <textarea
           ref={textareaRef}
-          className="vs-input vs-textnode__area"
+          className="vs-input vs-textnode__area nodrag"
           value={text}
           onChange={(e) => setField('text', e.target.value)}
         />

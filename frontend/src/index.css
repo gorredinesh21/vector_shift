@@ -1,13 +1,378 @@
+/* ============================================================================
+   VectorShift Pipeline Builder — Design System
+   Direction: light gradient / frosted glass, warm red-maroon accent, airy.
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  /* accent (used sparingly: buttons, wires, active, focus) */
+  --accent: #8c2f39;
+  --accent-strong: #7a2531;
+  --accent-bright: #b83248;
+  --accent-soft: #e9536a;
+  --accent-glow: rgba(184, 50, 72, 0.32);
+
+  /* warm light canvas gradient */
+  --grad-1: #fdf7f5;
+  --grad-2: #f8ecef;
+  --grad-3: #f2e3ea;
+
+  /* frosted glass */
+  --glass-bg: rgba(255, 255, 255, 0.62);
+  --glass-bg-strong: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(140, 47, 57, 0.14);
+  --glass-shadow: 0 8px 30px rgba(80, 20, 35, 0.1);
+
+  /* text */
+  --text: #2a2328;
+  --text-muted: #6e5c63;
+
+  /* handles */
+  --handle-source: #b83248; /* outputs (right) */
+  --handle-target: #9a8c90; /* inputs (left)  */
+
+  /* fields */
+  --field-bg: rgba(255, 255, 255, 0.72);
+  --field-border: rgba(42, 35, 40, 0.16);
+
+  --radius: 14px;
+  --radius-sm: 10px;
+}
+
+* { box-sizing: border-box; }
+
+html, body, #root { height: 100%; margin: 0; }
+
 body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color: var(--text);
+  background: linear-gradient(135deg, var(--grad-1), var(--grad-2) 55%, var(--grad-3));
+  background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: 'SFMono-Regular', Menlo, Consolas, monospace;
+}
+
+/* ── App layout ──────────────────────────────────────────────────────────── */
+.vs-app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.vs-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 22px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  border-bottom: 1px solid var(--glass-border);
+  z-index: 10;
+}
+
+.vs-brand { display: flex; align-items: center; gap: 10px; }
+.vs-brand__mark { color: var(--accent); }
+.vs-brand__name {
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: -0.02em;
+}
+.vs-brand__sub {
+  font-size: 12px;
+  color: var(--text-muted);
+  padding-left: 12px;
+  border-left: 1px solid var(--glass-border);
+}
+
+.vs-stage {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  padding: 18px;
+}
+/* the React Flow wrapper (from ui.js) becomes the glass canvas panel */
+.vs-stage > div {
+  flex: 1;
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  background: rgba(255, 255, 255, 0.35);
+}
+
+/* ── Bottom toolbar (node palette) ───────────────────────────────────────── */
+.vs-toolbar {
+  display: flex;
+  justify-content: center;
+  padding: 0 16px 16px;
+}
+.vs-toolbar__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  padding: 12px 16px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  border: 1px solid var(--glass-border);
+  border-radius: 18px;
+  box-shadow: var(--glass-shadow);
+  max-width: 1150px;
+}
+
+.vs-chip {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 13px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  background: var(--glass-bg-strong);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  cursor: grab;
+  user-select: none;
+  transition: transform 0.12s, box-shadow 0.12s, border-color 0.12s;
+}
+.vs-chip:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+  box-shadow: 0 6px 16px var(--accent-glow);
+}
+.vs-chip:active { cursor: grabbing; }
+.vs-chip__icon { color: var(--accent); flex: none; }
+
+/* ── Nodes ───────────────────────────────────────────────────────────────── */
+/* per-category accent color (icon + left bar) for scannability */
+.vs-node--logic { --cat: #b7791f; }
+.vs-node--knowledge { --cat: #2c7a7b; }
+.vs-node--list { --cat: #2f855a; }
+.vs-node--data { --cat: #4c51bf; }
+.vs-node--llm { --cat: #6b46c1; }
+.vs-node--io { --cat: #4a5568; }
+.vs-node--text { --cat: #9b2c4a; }
+.vs-node--utility { --cat: #b83280; }
+
+.vs-node {
+  position: relative;
+  min-width: 210px;
+  max-width: 340px;
+  background: var(--glass-bg-strong);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  border: 1px solid var(--glass-border);
+  border-left: 3px solid var(--cat, var(--accent));
+  border-radius: var(--radius);
+  box-shadow: var(--glass-shadow);
+  color: var(--text);
+}
+
+.vs-node__title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  border-bottom: 1px solid var(--glass-border);
+}
+.vs-node__icon { color: var(--cat, var(--accent)); flex: none; }
+
+.vs-node__body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+}
+
+.react-flow__node.selected .vs-node {
+  box-shadow: 0 0 0 2px var(--accent), var(--glass-shadow);
+}
+
+/* ── Fields ──────────────────────────────────────────────────────────────── */
+.vs-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 12px;
+}
+.vs-field--inline { flex-direction: row; align-items: center; gap: 8px; }
+.vs-field__label { color: var(--text-muted); font-weight: 500; }
+
+.vs-input {
+  width: 100%;
+  padding: 7px 10px;
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--text);
+  background: var(--field-bg);
+  border: 1px solid var(--field-border);
+  border-radius: var(--radius-sm);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.vs-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+textarea.vs-input { resize: none; min-height: 48px; line-height: 1.45; }
+select.vs-input { cursor: pointer; }
+
+.vs-slider { display: flex; align-items: center; gap: 8px; }
+.vs-slider input[type='range'] { flex: 1; accent-color: var(--accent); }
+.vs-slider__val {
+  font-size: 12px;
+  color: var(--text-muted);
+  min-width: 30px;
+  text-align: right;
+}
+input[type='checkbox'] { accent-color: var(--accent); width: 15px; height: 15px; }
+
+.vs-textnode__area { min-height: 48px; max-height: 240px; }
+
+/* ── Handles + variable labels ───────────────────────────────────────────── */
+.react-flow__handle {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08);
+  transition: box-shadow 0.15s;
+}
+.react-flow__handle-left { background: var(--handle-target); }
+.react-flow__handle-right { background: var(--handle-source); }
+.react-flow__handle:hover { box-shadow: 0 0 0 4px var(--accent-glow); }
+.react-flow__handle.connecting { box-shadow: 0 0 0 4px var(--accent-glow); }
+
+.vs-handle-label {
+  position: absolute;
+  font-size: 10px;
+  color: var(--text-muted);
+  transform: translateY(-50%);
+  pointer-events: none;
+  white-space: nowrap;
+}
+.vs-handle-label--left { left: 12px; }
+.vs-handle-label--right { right: 12px; }
+
+/* ── Edges / wires ───────────────────────────────────────────────────────── */
+.react-flow__edge-path { stroke: var(--accent); stroke-width: 2; }
+.react-flow__edge.selected .react-flow__edge-path,
+.react-flow__edge:hover .react-flow__edge-path { stroke: var(--accent-soft); }
+.react-flow__arrowhead * { fill: var(--accent); stroke: var(--accent); }
+.react-flow__connectionline .react-flow__connection-path { stroke: var(--accent-soft); stroke-width: 2; }
+
+/* ── React Flow chrome ───────────────────────────────────────────────────── */
+.react-flow { background: transparent; }
+.react-flow__controls {
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: var(--glass-shadow);
+  border: 1px solid var(--glass-border);
+}
+.react-flow__controls-button {
+  background: var(--glass-bg-strong);
+  border-bottom: 1px solid var(--glass-border);
+  color: var(--text);
+}
+.react-flow__controls-button:hover { background: #fff; }
+.react-flow__controls-button svg { fill: var(--text); }
+.react-flow__minimap {
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+.react-flow__attribution { display: none; }
+
+/* ── Submit button ───────────────────────────────────────────────────────── */
+.vs-submit { display: flex; align-items: center; }
+.vs-submit__btn {
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(135deg, var(--accent-bright), var(--accent-strong));
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 10px 20px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px var(--accent-glow);
+  transition: transform 0.12s, box-shadow 0.12s, opacity 0.12s;
+}
+.vs-submit__btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px var(--accent-glow); }
+.vs-submit__btn:disabled { opacity: 0.6; cursor: default; transform: none; }
+
+/* ── Result modal ────────────────────────────────────────────────────────── */
+.vs-modal__overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(60, 20, 30, 0.28);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: vs-fade 0.18s ease;
+}
+.vs-modal {
+  width: min(420px, 90vw);
+  background: var(--glass-bg-strong);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(80, 20, 35, 0.25);
+  padding: 26px;
+  text-align: center;
+  animation: vs-pop 0.2s ease;
+}
+.vs-modal__title { font-size: 19px; font-weight: 700; margin-bottom: 18px; }
+.vs-modal__stats { display: flex; gap: 12px; margin-bottom: 18px; }
+.vs-stat {
+  flex: 1;
+  background: var(--field-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 14px;
+  padding: 14px 8px;
+}
+.vs-stat__num { display: block; font-size: 26px; font-weight: 700; color: var(--accent); line-height: 1; }
+.vs-stat__label {
+  display: block;
+  margin-top: 6px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+.vs-modal__msg { font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 20px; }
+.vs-modal__hint { font-size: 12px; color: var(--text-muted); margin: 0 0 20px; }
+.vs-modal__hint code { background: rgba(0, 0, 0, 0.06); padding: 1px 5px; border-radius: 5px; }
+.vs-modal__close {
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(135deg, var(--accent-bright), var(--accent-strong));
+  border: none;
+  border-radius: 10px;
+  padding: 9px 22px;
+  cursor: pointer;
+}
+
+@keyframes vs-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes vs-pop {
+  from { opacity: 0; transform: scale(0.96) translateY(6px); }
+  to { opacity: 1; transform: none; }
 }

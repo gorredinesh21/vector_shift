@@ -133,12 +133,14 @@ Wire the frontend to the backend end-to-end:
 
 ## ✅ Deliverables Checklist
 
-- [ ] **Part 1** — Node abstraction (decided ✔), 4 originals refactored onto it, + **7 new nodes** *(not started)*
-- [ ] **Part 2** — A unified, polished visual design across the whole app *(not started)*
-- [ ] **Part 3** — Text node auto-resizes **and** generates handles from `{{ variables }}` *(not started)*
-- [ ] **Part 4** — Submit POSTs the pipeline; backend returns `{num_nodes, num_edges, is_dag}`; friendly alert *(not started)*
-- [ ] App runs cleanly with the commands below (no console errors on a normal flow) *(not started)*
-- [ ] A short note in this README (or a `NOTES.md`) explaining your abstraction & key decisions *(not started)*
+- [x] **Part 1** — Node abstraction (config + `renderBody`), 4 originals refactored, + **7 new nodes** ✅
+- [x] **Part 2** — Unified light-glass / warm-maroon visual design across the whole app ✅
+- [x] **Part 3** — Text node auto-resizes **and** generates handles from `{{ variables }}` ✅
+- [x] **Part 4** — Submit POSTs the pipeline; backend returns `{num_nodes, num_edges, is_dag}`; themed modal ✅
+- [x] App builds/serves cleanly (`npm run build` + dev server HTTP 200; backend tested) ✅
+- [x] Abstraction & decisions documented (this README + `EXECUTION.md` + `HANDOVER.md`) ✅
+
+See **`HANDOVER.md`** for per-part details and how to test each one.
 
 ---
 
