@@ -256,6 +256,45 @@ a Jest teardown warning, not a test failure.)
 
 ---
 
+---
+
+## UX enhancements (beyond the 4 parts)
+
+Added on request — undo/redo, edge deletion, and brighter wires.
+
+### 1. Undo / Redo
+- **`Ctrl/Cmd + Z`** = undo, **`Ctrl/Cmd + Y`** (or **`Ctrl/Cmd + Shift + Z`**) = redo.
+- History lives in the store (`past` / `future` stacks, capped at 100). A snapshot is taken before
+  each structural change: adding a node, connecting, node-drag start, and deletions.
+- Snapshots are cloned so later in-place edits don't corrupt history.
+- Shortcuts are **ignored while typing in a field**, so the browser's native text undo still works
+  inside inputs/textareas.
+
+### 2. Delete connections (edges)
+- Select an edge and press **`Delete`** or **`Backspace`**, **or**
+- Hover an edge and click the **✕ button** that appears at its midpoint (custom `DeletableEdge`).
+- Both paths are undoable.
+
+### 3. Brighter / clearer wires
+- Edges now render in a bright red (`#b83248`) at 2.5px with a filled arrowhead (`ArrowClosed`, 22px).
+- On **hover / selection** they thicken to 3.5px, brighten, and get a soft glow — easy to see and target.
+
+**New/changed files:** `store.js` (history + `removeEdge` + brighter edge defaults), `ui.js`
+(edge type, delete keys, drag snapshot, undo/redo shortcuts), `DeletableEdge.js` (new),
+`index.css` (edge brightening + ✕ button), `store.test.js` (new tests).
+
+### How to test
+1. Add a few nodes, connect them → wires are bright red with arrowheads.
+2. Move/add/delete a node, then **Ctrl+Z** → it reverts; **Ctrl+Y** → it comes back.
+3. Hover a wire → **✕** appears; click it → the wire is removed. Or select a wire + **Delete**.
+4. Type inside a node's text field and press **Ctrl+Z** → only the text changes (native), nodes untouched.
+
+### Verification done
+- Store history + edge removal unit-tested (`store.test.js`).
+- Full frontend suite: **9/9 passed** (store + submit + ResultModal). Build compiles cleanly.
+
+---
+
 ## Project is feature-complete
-All four assessment parts are implemented, committed, and pushed. Suggested final step before
-submitting: run both servers, click through the test steps in each part above, and skim the diff.
+All four assessment parts + the UX enhancements are implemented, committed, and pushed. Suggested
+final step before submitting: run both servers, click through the test steps above, and skim the diff.

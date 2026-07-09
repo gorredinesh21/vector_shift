@@ -266,12 +266,43 @@ input[type='checkbox'] { accent-color: var(--accent); width: 15px; height: 15px;
 .vs-handle-label--left { left: 12px; }
 .vs-handle-label--right { right: 12px; }
 
-/* ── Edges / wires ───────────────────────────────────────────────────────── */
-.react-flow__edge-path { stroke: var(--accent); stroke-width: 2; }
-.react-flow__edge.selected .react-flow__edge-path,
-.react-flow__edge:hover .react-flow__edge-path { stroke: var(--accent-soft); }
-.react-flow__arrowhead * { fill: var(--accent); stroke: var(--accent); }
-.react-flow__connectionline .react-flow__connection-path { stroke: var(--accent-soft); stroke-width: 2; }
+/* ── Edges / wires (bright + clearly arrowed) ────────────────────────────── */
+.react-flow__edge-path { stroke: var(--accent-bright); stroke-width: 2.5; }
+.react-flow__edge:hover .react-flow__edge-path {
+  stroke: var(--accent-soft) !important;
+  stroke-width: 3.5 !important;
+  filter: drop-shadow(0 0 3px var(--accent-glow));
+}
+.react-flow__edge.selected .react-flow__edge-path {
+  stroke: var(--accent-soft) !important;
+  stroke-width: 3.5 !important;
+  filter: drop-shadow(0 0 4px var(--accent-glow));
+}
+.react-flow__arrowhead * { fill: var(--accent-bright); stroke: var(--accent-bright); }
+.react-flow__connectionline .react-flow__connection-path,
+.react-flow__connectionline path { stroke: var(--accent-bright); stroke-width: 2.5; }
+
+/* on-edge delete button */
+.vs-edge-delete {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--accent-bright);
+  color: #fff;
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 2px 8px var(--accent-glow);
+  pointer-events: all;
+  transition: background 0.1s, box-shadow 0.1s;
+}
+.vs-edge-delete:hover { background: var(--accent-strong); box-shadow: 0 3px 12px var(--accent-glow); }
 
 /* ── React Flow chrome ───────────────────────────────────────────────────── */
 .react-flow { background: transparent; }

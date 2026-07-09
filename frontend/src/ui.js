@@ -2,16 +2,19 @@
 // Displays the drag-and-drop UI
 // --------------------------------------------------
 
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import ReactFlow, { Controls, Background, MiniMap } from 'reactflow';
 import { useStore } from './store';
 import { useShallow } from 'zustand/react/shallow';
 import { nodeTypes } from './nodes';
+import { DeletableEdge } from './DeletableEdge';
 
 import 'reactflow/dist/style.css';
 
 const gridSize = 20;
 const proOptions = { hideAttribution: true };
+const edgeTypes = { deletable: DeletableEdge };
+const deleteKeyCodes = ['Backspace', 'Delete'];
 
 const selector = (state) => ({
   nodes: state.nodes,
@@ -21,6 +24,9 @@ const selector = (state) => ({
   onNodesChange: state.onNodesChange,
   onEdgesChange: state.onEdgesChange,
   onConnect: state.onConnect,
+  takeSnapshot: state.takeSnapshot,
+  undo: state.undo,
+  redo: state.redo,
 });
 
 export const PipelineUI = () => {
@@ -33,8 +39,34 @@ export const PipelineUI = () => {
     addNode,
     onNodesChange,
     onEdgesChange,
-    onConnect
+    onConnect,
+    takeSnapshot,
+    undo,
+    redo,
   } = useStore(useShallow(selector));
+
+  // Undo (Ctrl/Cmd+Z) and Redo (Ctrl/Cmd+Y or Ctrl/Cmd+Shift+Z).
+  // Skip when typing in a field so the browser's native text undo still works.
+  useEffect(() => {
+    const onKeyDown = (e) => {
+      const t = e.target;
+      const typing =
+        t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.isContentEditable;
+      if (typing) return;
+      if (!(e.ctrlKey || e.metaKey)) return;
+
+      const key = e.key.toLowerCase();
+      if (key === 'z' && !e.shiftKey) {
+        e.preventDefault();
+        undo();
+      } else if (key === 'y' || (key === 'z' && e.shiftKey)) {
+        e.preventDefault();
+        redo();
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [undo, redo]);
 
   const getInitNodeData = (nodeID, type) => {
     let nodeData = { id: nodeID, nodeType: `${type}` };
@@ -79,6 +111,9 @@ export const PipelineUI = () => {
     event.dataTransfer.dropEffect = 'move';
   }, []);
 
+  // snapshot once at the start of a node drag so the move can be undone
+  const onNodeDragStart = useCallback(() => takeSnapshot(), [takeSnapshot]);
+
   return (
     <>
       <div ref={reactFlowWrapper} style={{ width: '100%', height: '70vh' }}>
@@ -88,10 +123,13 @@ export const PipelineUI = () => {
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
+          onNodeDragStart={onNodeDragStart}
           onDrop={onDrop}
           onDragOver={onDragOver}
           onInit={setReactFlowInstance}
           nodeTypes={nodeTypes}
+          edgeTypes={edgeTypes}
+          deleteKeyCode={deleteKeyCodes}
           proOptions={proOptions}
           snapGrid={[gridSize, gridSize]}
           connectionLineType='smoothstep'
