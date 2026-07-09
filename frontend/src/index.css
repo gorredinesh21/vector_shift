@@ -375,8 +375,24 @@ input[type='checkbox'] { accent-color: var(--accent); width: 15px; height: 15px;
 }
 .react-flow__attribution { display: none; }
 
-/* ── Submit button ───────────────────────────────────────────────────────── */
-.vs-submit { display: flex; align-items: center; }
+/* ── Submit button + inline result ───────────────────────────────────────── */
+.vs-submit { display: flex; align-items: center; gap: 12px; }
+.vs-result {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 7px 14px;
+  font-size: 13px;
+  color: var(--text);
+  background: var(--glass-bg-strong);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--glass-shadow);
+  white-space: nowrap;
+}
+.vs-result strong { color: var(--accent); font-size: 15px; }
+.vs-result--error { color: var(--accent-strong); }
+.vs-result--error strong { color: var(--accent-strong); }
 .vs-submit__btn {
   font-family: inherit;
   font-size: 14px;

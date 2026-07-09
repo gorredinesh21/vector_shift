@@ -181,8 +181,10 @@ counts + DAG status, shown in a themed modal.
 **Frontend:**
 - `submit.js` — reads `nodes`/`edges` from the store, POSTs JSON to `http://localhost:8000/pipelines/parse`,
   handles loading + errors, opens the modal on response.
-- `ResultModal.js` — themed modal showing Nodes / Edges / Is-DAG and a friendly message (or an error
-  with a hint to start the backend). Replaces `window.alert()`.
+- Results shown **inline** next to the button — "N nodes · M edges · DAG: Yes/No" (or an inline error).
+  `submit.js` also `console.log`s the exact graph payload and the backend response, so you can verify
+  in DevTools that the canvas is captured as a graph and the numbers are calculated. (An earlier
+  glass-modal version was replaced with this inline display on request.)
 
 ### How to test Part 4
 1. Start backend: `cd backend && pip install -r requirements.txt && uvicorn main:app --reload` (port 8000).
@@ -235,7 +237,7 @@ an accent only (buttons, wires, focus, active) — never behind body text.
    along the **bottom**.
 3. Drop nodes — glass cards with category-colored icons/left bars; drag wires — maroon animated edges.
 4. Focus a field — maroon focus ring; hover a handle — maroon glow; hover a chip — it lifts.
-5. Click Submit — a glass modal with stat tiles animates in.
+5. Click Submit — the node/edge counts and DAG status appear inline next to the button (and in the console).
 
 ### Verification done
 - `npm run build` compiles cleanly; dev server compiles and serves **HTTP 200**.
@@ -256,7 +258,7 @@ cd backend && python -m pytest -v
 Covers node/edge counts, DAG detection (linear, diamond, disconnected, empty, 2-/3-node cycles,
 self-loop, cycle hidden in a larger graph), exact response keys, and int/int/bool types.
 
-**Frontend** (`src/submit.test.js` + `src/ResultModal.test.js`, 5 tests — covers N6 + N11):
+**Frontend** (`src/submit.test.js` + `src/store.test.js` — covers N6 + N11 + history):
 ```bash
 cd frontend && npm test         # (CI=true npx react-scripts test --watchAll=false)
 ```

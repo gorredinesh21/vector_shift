@@ -1,11 +1,14 @@
 // submit.js
 // Sends the current pipeline (nodes + edges) to the backend and shows the
-// analysis (num_nodes, num_edges, is_dag) in a themed modal.
+// analysis (num_nodes, num_edges, is_dag) inline next to the button.
+//
+// It also console.logs the exact payload sent and the response received, so you
+// can verify in DevTools that the canvas is captured as a graph and the numbers
+// are calculated by the backend.
 
 import { useState } from 'react';
 import { useStore } from './store';
 import { useShallow } from 'zustand/react/shallow';
-import { ResultModal } from './ResultModal';
 
 const API_URL = 'http://localhost:8000/pipelines/parse';
 
@@ -21,24 +24,28 @@ export const SubmitButton = () => {
     setLoading(true);
     setError(null);
     setResult(null);
+
+    const payload = { nodes, edges };
+    // Proof the canvas is stored as a graph — inspect this in the browser console.
+    console.log('[VectorShift] submitting pipeline graph:', payload);
+    console.log(`[VectorShift] ${nodes.length} nodes, ${edges.length} edges on canvas`);
+
     try {
       const res = await fetch(API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nodes, edges }),
+        body: JSON.stringify(payload),
       });
       if (!res.ok) throw new Error(`Server responded with ${res.status}`);
-      setResult(await res.json());
+      const data = await res.json();
+      console.log('[VectorShift] backend response:', data);
+      setResult(data);
     } catch (e) {
+      console.error('[VectorShift] submit failed:', e);
       setError(e.message || 'Could not reach the backend.');
     } finally {
       setLoading(false);
     }
-  };
-
-  const closeModal = () => {
-    setResult(null);
-    setError(null);
   };
 
   return (
@@ -47,8 +54,20 @@ export const SubmitButton = () => {
         {loading ? 'Submitting…' : 'Submit Pipeline'}
       </button>
 
-      {(result || error) && (
-        <ResultModal result={result} error={error} onClose={closeModal} />
+      {result && (
+        <div className="vs-result" role="status">
+          <span className="vs-result__stat"><strong>{result.num_nodes}</strong> nodes</span>
+          <span className="vs-result__stat"><strong>{result.num_edges}</strong> edges</span>
+          <span className="vs-result__stat">
+            DAG:&nbsp;<strong>{result.is_dag ? 'Yes' : 'No'}</strong>
+          </span>
+        </div>
+      )}
+
+      {error && (
+        <div className="vs-result vs-result--error" role="status">
+          ⚠ {error} — is the backend running on :8000?
+        </div>
       )}
     </div>
   );
