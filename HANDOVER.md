@@ -10,7 +10,7 @@ Living log of what's built, how to run it, and how to test it. Updated after eac
 | Part | Status |
 |------|--------|
 | Part 1 — Node abstraction + 4 refactors + 7 new nodes | ✅ Done |
-| Part 3 — Text node logic (resize + `{{ }}` handles) | ⏳ Pending |
+| Part 3 — Text node logic (resize + `{{ }}` handles) | ✅ Done |
 | Part 4 — Backend DAG + submit + glass modal | ⏳ Pending |
 | Part 2 — Styling (light glass / maroon) | ⏳ Pending |
 
@@ -103,6 +103,46 @@ Field `kind`s supported: `text | textarea | select | number | slider | checkbox`
 
 ---
 
+---
+
+## Part 3 — Text Node Logic ✅
+
+### What was built
+The Text node body (`nodes/textNode.js`, rendered via BaseNode's `renderBody`) now:
+1. **Auto-resizes** — the `<textarea>` grows with content (`scrollHeight`, clamped 48–240px).
+2. **Dynamic variable handles** — typing a valid JS identifier inside `{{ }}` adds a matching
+   **input handle** on the left edge, live. Multiple variables → multiple evenly-spaced handles.
+
+**Correctness details (the tricky bits, handled):**
+- **Extraction:** non-greedy global regex `/\{\{([^}]*)\}\}/g`; each `{{ }}` captured separately; inner text trimmed.
+- **Validation:** only valid JS identifiers (`/^[A-Za-z_$][A-Za-z0-9_$]*$/`) become handles; invalid ones ignored.
+- **De-dupe:** `Set` → one handle per unique name.
+- **Re-measure:** `useUpdateNodeInternals(id)` runs whenever the variable set changes, so new handles are
+  actually connectable (React Flow caches handle positions otherwise — the classic gotcha).
+- **No dangling edges:** removing a variable prunes any edge wired to its now-gone handle
+  (`store.removeEdgesToMissingHandles`).
+- **State:** text persists to the store via `setField`/`updateNodeField`, so Part 4 submit will include it.
+
+**Changed files:** `nodes/textNode.js` (logic), `store.js` (added `removeEdgesToMissingHandles`).
+
+### How to test Part 3
+1. `cd frontend && npm start`, open http://localhost:3000; drag a **Text** node onto the canvas.
+2. **Auto-resize:** type/paste several lines — the node grows taller to fit.
+3. **Variables → handles:** type `Hi {{ customer }}, ticket {{ ticket_id }} is {{ status }}` →
+   **3 input handles** appear on the left, evenly spaced, each labelled.
+4. **Validation:** type `{{ 2fast }}`, `{{ my var }}`, `{{ user-name }}` → **no** handles created.
+5. **De-dupe:** type `{{ user }} {{ user }}` → only **one** `user` handle.
+6. **Connect + remove:** wire another node's output into a variable handle, then delete that
+   `{{ variable }}` from the text → the handle **and** the wire disappear cleanly.
+
+### Verification done
+- `npm run build` compiles cleanly.
+- Parsing/validation/dedupe logic unit-tested against 6 cases (including non-greedy, dedupe,
+  and all-invalid inputs) — **6/6 passed**.
+
+---
+
 ## Next up
-**Part 3** — enhance `nodes/textNode.js`: auto-resize + dynamic `{{ variable }}` → left-side handles
-(with `useUpdateNodeInternals`), then Part 4 (backend) and Part 2 (styling).
+**Part 4** — backend `/pipelines/parse` (POST): compute `num_nodes`, `num_edges`, `is_dag`
+(Kahn's algorithm) + CORS; wire `submit.js` to POST the pipeline; show a themed result modal.
+Then **Part 2** (styling).

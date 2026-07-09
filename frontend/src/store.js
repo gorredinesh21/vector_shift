@@ -46,9 +46,18 @@ export const useStore = create((set, get) => ({
           if (node.id === nodeId) {
             node.data = { ...node.data, [fieldName]: fieldValue };
           }
-  
+
           return node;
         }),
+      });
+    },
+    // Drop edges pointing at a target handle on `nodeId` that no longer exists.
+    // Used by the Text node when a {{ variable }} (and its handle) is removed.
+    removeEdgesToMissingHandles: (nodeId, validHandleIds) => {
+      set({
+        edges: get().edges.filter(
+          (e) => e.target !== nodeId || validHandleIds.includes(e.targetHandle)
+        ),
       });
     },
   }));
