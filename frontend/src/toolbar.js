@@ -1,17 +1,18 @@
 // toolbar.js
+// The node palette. Chips are generated from the data-driven node definitions,
+// so a new node added to definitions.js automatically appears here.
 
 import { DraggableNode } from './draggableNode';
+import { nodeDefinitions } from './nodes';
 
 export const PipelineToolbar = () => {
-
-    return (
-        <div style={{ padding: '10px' }}>
-            <div style={{ marginTop: '20px', display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
-                <DraggableNode type='customInput' label='Input' />
-                <DraggableNode type='llm' label='LLM' />
-                <DraggableNode type='customOutput' label='Output' />
-                <DraggableNode type='text' label='Text' />
-            </div>
-        </div>
-    );
+  return (
+    <div className="vs-toolbar">
+      <div className="vs-toolbar__chips">
+        {nodeDefinitions.map((def) => (
+          <DraggableNode key={def.type} type={def.type} label={def.title} icon={def.icon} />
+        ))}
+      </div>
+    </div>
+  );
 };

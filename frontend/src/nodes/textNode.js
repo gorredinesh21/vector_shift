@@ -1,35 +1,21 @@
 // textNode.js
+// Custom body for the Text node, plugged into BaseNode via the `renderBody`
+// escape hatch (see definitions.js). Part 1 provides a basic textarea; Part 3
+// adds auto-resize and dynamic {{ variable }} → Handle logic here.
 
-import { useState } from 'react';
-import { Handle, Position } from 'reactflow';
-
-export const TextNode = ({ id, data }) => {
-  const [currText, setCurrText] = useState(data?.text || '{{input}}');
-
-  const handleTextChange = (e) => {
-    setCurrText(e.target.value);
-  };
+export function TextNodeBody({ setField, values }) {
+  const text = values.text ?? '';
 
   return (
-    <div style={{ width: 200, height: 80, border: '1px solid black' }}>
-      <div>
-        <span>Text</span>
-      </div>
-      <div>
-        <label>
-          Text:
-          <input
-            type="text"
-            value={currText}
-            onChange={handleTextChange}
-          />
-        </label>
-      </div>
-      <Handle
-        type="source"
-        position={Position.Right}
-        id={`${id}-output`}
-      />
+    <div className="vs-textnode">
+      <label className="vs-field">
+        <span className="vs-field__label">Text</span>
+        <textarea
+          className="vs-input vs-textnode__area"
+          value={text}
+          onChange={(e) => setField('text', e.target.value)}
+        />
+      </label>
     </div>
   );
 }
