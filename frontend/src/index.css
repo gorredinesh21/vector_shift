@@ -91,6 +91,29 @@ code {
   border-left: 1px solid var(--glass-border);
 }
 
+.vs-header__actions { display: flex; align-items: center; gap: 12px; }
+.vs-history { display: flex; gap: 6px; }
+.vs-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  color: var(--text);
+  background: var(--glass-bg-strong);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: color 0.12s, border-color 0.12s, box-shadow 0.12s, opacity 0.12s;
+}
+.vs-icon-btn:hover:not(:disabled) {
+  color: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 4px 12px var(--accent-glow);
+}
+.vs-icon-btn:disabled { opacity: 0.4; cursor: default; }
+
 .vs-stage {
   flex: 1;
   min-height: 0;

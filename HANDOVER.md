@@ -264,6 +264,8 @@ Added on request — undo/redo, edge deletion, and brighter wires.
 
 ### 1. Undo / Redo
 - **`Ctrl/Cmd + Z`** = undo, **`Ctrl/Cmd + Y`** (or **`Ctrl/Cmd + Shift + Z`**) = redo.
+- Also **Undo / Redo buttons** in the header (`HistoryControls.js`) — they call the same store actions
+  and auto-disable when there's nothing to undo/redo.
 - History lives in the store (`past` / `future` stacks, capped at 100). A snapshot is taken before
   each structural change: adding a node, connecting, node-drag start, and deletions.
 - Snapshots are cloned so later in-place edits don't corrupt history.
