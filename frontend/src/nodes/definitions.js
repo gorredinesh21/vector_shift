@@ -6,6 +6,7 @@
 // Handle:  { id, type: 'source'|'target', side: 'left'|'right', label? }
 // Field:   { name, label, kind, default?, options?, min?, max?, step?, placeholder? }
 //   kinds: text | textarea | select | number | slider | checkbox
+// description: one-line explanation shown in tooltips + the in-app Node Guide.
 
 import { TextNodeBody } from './textNode';
 
@@ -16,6 +17,7 @@ export const nodeDefinitions = [
     title: 'Input',
     category: 'io',
     icon: 'LogIn',
+    description: 'Entry point of the pipeline — feeds a value (text or a file) in for downstream nodes.',
     handles: [{ id: 'value', type: 'source', side: 'right' }],
     fields: [
       { name: 'inputName', label: 'Name', kind: 'text',
@@ -28,6 +30,7 @@ export const nodeDefinitions = [
     title: 'Output',
     category: 'io',
     icon: 'LogOut',
+    description: 'End point of the pipeline — exposes a final result (text or image).',
     handles: [{ id: 'value', type: 'target', side: 'left' }],
     fields: [
       { name: 'outputName', label: 'Name', kind: 'text',
@@ -40,6 +43,7 @@ export const nodeDefinitions = [
     title: 'LLM',
     category: 'llm',
     icon: 'Sparkles',
+    description: 'Calls a large language model. Wire in a system prompt and a user prompt; outputs the response.',
     handles: [
       { id: 'system', type: 'target', side: 'left', label: 'system' },
       { id: 'prompt', type: 'target', side: 'left', label: 'prompt' },
@@ -55,6 +59,7 @@ export const nodeDefinitions = [
     title: 'Text',
     category: 'text',
     icon: 'Type',
+    description: 'A text / template block. Type {{ variables }} to auto-create input handles you can wire values into. Grows as you type.',
     handles: [{ id: 'output', type: 'source', side: 'right' }],
     // state lives in `text`; the body is custom (Part 3 dynamic-variable logic)
     fields: [{ name: 'text', kind: 'textarea', default: '{{input}}' }],
@@ -68,6 +73,7 @@ export const nodeDefinitions = [
     title: 'Condition',
     category: 'logic',
     icon: 'GitBranch',
+    description: 'Routes the flow by a rule — sends the pipeline down the True or False branch (e.g. gate a memo on deal fit).',
     handles: [
       { id: 'input', type: 'target', side: 'left' },
       { id: 'true', type: 'source', side: 'right', label: 'True' },
@@ -81,6 +87,7 @@ export const nodeDefinitions = [
     title: 'Merge',
     category: 'logic',
     icon: 'Merge',
+    description: 'Combines multiple branches into one. "Pick First" takes the first available value; "Join All" returns them as a list.',
     handles: [
       { id: 'path1', type: 'target', side: 'left', label: '1' },
       { id: 'path2', type: 'target', side: 'left', label: '2' },
@@ -94,6 +101,7 @@ export const nodeDefinitions = [
     title: 'Filter List',
     category: 'list',
     icon: 'Filter',
+    description: 'Filters a list, keeping (or dropping) items that match a condition.',
     handles: [
       { id: 'list', type: 'target', side: 'left' },
       { id: 'output', type: 'source', side: 'right' },
@@ -110,6 +118,7 @@ export const nodeDefinitions = [
     title: 'Data Room Q&A',
     category: 'knowledge',
     icon: 'Search',
+    description: 'Answers a question over a data room / knowledge base and returns a sourced answer with citations.',
     handles: [
       { id: 'question', type: 'target', side: 'left' },
       { id: 'answer', type: 'source', side: 'right', label: 'Answer' },
@@ -127,6 +136,7 @@ export const nodeDefinitions = [
     title: 'Document Loader',
     category: 'data',
     icon: 'FileUp',
+    description: 'Loads a deal document (CIM, financials, contract, data room) into the pipeline for extraction or Q&A.',
     handles: [
       { id: 'document', type: 'source', side: 'right' },
     ],
@@ -141,6 +151,7 @@ export const nodeDefinitions = [
     title: 'Company Research',
     category: 'data',
     icon: 'Building2',
+    description: 'Researches and enriches a target company from external sources (web, news, filings).',
     handles: [
       { id: 'company', type: 'target', side: 'left' },
       { id: 'profile', type: 'source', side: 'right' },
@@ -156,6 +167,7 @@ export const nodeDefinitions = [
     title: 'Note',
     category: 'utility',
     icon: 'StickyNote',
+    description: 'A free-text sticky note for annotating the canvas. Has no connections.',
     handles: [],
     fields: [{ name: 'note', kind: 'textarea', placeholder: 'Jot a note…' }],
   },

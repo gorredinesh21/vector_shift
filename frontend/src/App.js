@@ -1,10 +1,14 @@
-import { Workflow } from 'lucide-react';
+import { useState } from 'react';
+import { Workflow, BookOpen } from 'lucide-react';
 import { PipelineToolbar } from './toolbar';
 import { PipelineUI } from './ui';
 import { SubmitButton } from './submit';
 import { HistoryControls } from './HistoryControls';
+import { NodeGuide } from './NodeGuide';
 
 function App() {
+  const [guideOpen, setGuideOpen] = useState(false);
+
   return (
     <div className="vs-app">
       <header className="vs-header">
@@ -15,6 +19,15 @@ function App() {
         </div>
         <div className="vs-header__actions">
           <HistoryControls />
+          <button
+            type="button"
+            className="vs-icon-btn"
+            onClick={() => setGuideOpen(true)}
+            title="Node Guide"
+            aria-label="Node Guide"
+          >
+            <BookOpen size={16} />
+          </button>
           <SubmitButton />
         </div>
       </header>
@@ -24,6 +37,8 @@ function App() {
       </main>
 
       <PipelineToolbar />
+
+      {guideOpen && <NodeGuide onClose={() => setGuideOpen(false)} />}
     </div>
   );
 }

@@ -10,7 +10,13 @@ export const PipelineToolbar = () => {
     <div className="vs-toolbar">
       <div className="vs-toolbar__chips">
         {nodeDefinitions.map((def) => (
-          <DraggableNode key={def.type} type={def.type} label={def.title} icon={def.icon} />
+          <DraggableNode
+            key={def.type}
+            type={def.type}
+            label={def.title}
+            icon={def.icon}
+            description={def.description}
+          />
         ))}
       </div>
     </div>

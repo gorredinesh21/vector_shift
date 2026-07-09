@@ -77,7 +77,7 @@ export function BaseNode({ id, data, config }) {
         lineClassName="vs-resize-line"
         handleClassName="vs-resize-handle"
       />
-      <div className="vs-node__title">
+      <div className="vs-node__title" title={config.description}>
         {Icon ? <Icon size={15} className="vs-node__icon" /> : null}
         <span>{config.title}</span>
       </div>

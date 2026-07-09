@@ -295,6 +295,13 @@ Added on request — undo/redo, edge deletion, and brighter wires.
 - Edges now render in a bright red (`#b83248`) at 2.5px with a filled arrowhead (`ArrowClosed`, 22px).
 - On **hover / selection** they thicken to 3.5px, brighten, and get a soft glow — easy to see and target.
 
+### 5. Node documentation (in-app + doc)
+- Each node has a `description` in `definitions.js`.
+- **In-app:** a **Node Guide** button (📖) in the header opens a modal listing every node with its
+  description and inputs/outputs (`NodeGuide.js`). Hovering a toolbar chip or a node's title also
+  shows the description as a tooltip.
+- **Doc:** `NODES.md` is a full written reference (kept in sync with `definitions.js`).
+
 ### 4. Resizable nodes (with scaling content)
 - Every node is drag-resizable via React Flow's `NodeResizer` in `BaseNode`. **Select a node**, then
   drag its edges/corners to resize (min 180×70). The glass card fills the new bounds (flex layout).

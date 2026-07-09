@@ -4,7 +4,7 @@
 
 import * as Icons from 'lucide-react';
 
-export const DraggableNode = ({ type, label, icon }) => {
+export const DraggableNode = ({ type, label, icon, description }) => {
   const onDragStart = (event, nodeType) => {
     const appData = { nodeType };
     event.target.style.cursor = 'grabbing';
@@ -17,6 +17,7 @@ export const DraggableNode = ({ type, label, icon }) => {
   return (
     <div
       className={`vs-chip ${type}`}
+      title={description}
       onDragStart={(event) => onDragStart(event, type)}
       onDragEnd={(event) => (event.target.style.cursor = 'grab')}
       draggable
