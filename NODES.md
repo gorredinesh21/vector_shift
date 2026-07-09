@@ -1,107 +1,105 @@
-# Node Reference
+# Nodes & the Node Abstraction
 
-Every node available in the pipeline builder, what it does, and its inputs/outputs.
-This same information is available **inside the app** — click **Node Guide** (📖) in the header,
-or hover a toolbar chip / a node's title for a tooltip.
+## The abstraction I followed
 
-> Convention: **outputs** are handles on the **right** of a node; **inputs** are on the **left**.
-> Wire an output into an input to connect nodes. The node lineup is tailored to VectorShift's
-> market — **private-equity deal workflows** (sourcing → screening → diligence → memo).
+I built a **config-driven (data-driven) abstraction**. Every node is described by a plain data object,
+and a single component — `BaseNode` — renders any node from that object. A node's definition looks like:
 
-## Core building blocks
+```js
+{
+  type: 'condition',            // unique key (toolbar chip + nodeTypes)
+  title: 'Condition',
+  category: 'logic',            // drives icon color / accent
+  icon: 'GitBranch',            // any lucide-react icon
+  description: 'Routes the flow by a rule…',   // shown in tooltips + Node Guide
+  handles: [                    // connection points
+    { id: 'input', type: 'target', side: 'left' },
+    { id: 'true',  type: 'source', side: 'right', label: 'True' },
+    { id: 'false', type: 'source', side: 'right', label: 'False' },
+  ],
+  fields: [                     // the editable inputs
+    { name: 'condition', label: 'Condition', kind: 'text' },
+  ],
+  // optional escape hatch for custom bodies:
+  // renderBody: ({ id, data, values, setField }) => <Custom .../>,
+}
+```
 
-### Input  ·  _I/O_
-Entry point of the pipeline — feeds a value (text or a file) in for downstream nodes.
-- **Inputs:** —
-- **Outputs:** value
-- **Fields:** Name · Type (Text / File)
+Field `kind`s supported: `text · textarea · select · number · slider · checkbox`.
 
-### Output  ·  _I/O_
-End point of the pipeline — exposes a final result (text or image).
-- **Inputs:** value
-- **Outputs:** —
-- **Fields:** Name · Type (Text / Image)
+## How this differs from the initial code
 
-### LLM  ·  _AI_
-Calls a large language model. Wire in a system prompt and a user prompt; outputs the response.
-- **Inputs:** system, prompt
-- **Outputs:** response
-- **Fields:** Model (gpt-4 / gpt-4o / claude-opus / claude-sonnet)
+Originally each node was its **own file with duplicated markup** — the same wrapper `<div>`, inline
+styles, title block, `useState` hooks, and `<Handle>` elements copied and tweaked in every file. Adding
+a node meant copying ~40 lines and editing them; a style change meant editing every file.
 
-### Text  ·  _Text_
-A text / template block. Type `{{ variables }}` to auto-create input handles you can wire values
-into. The box grows as you type.
-- **Inputs:** one per `{{ variable }}` (created dynamically)
-- **Outputs:** output
-- **Fields:** the text/template itself
+Now there is **one** `BaseNode` and one list of data objects. The duplication is gone: the shell,
+styling, field rendering, handle placement, and store syncing all live in one place.
 
-## Logic & lists
+## Why it's better
 
-### Condition  ·  _Logic_
-Routes the flow by a rule — sends the pipeline down the **True** or **False** branch
-(e.g. gate an IC memo on whether the deal fits the mandate).
-- **Inputs:** input
-- **Outputs:** True, False
-- **Fields:** Condition (e.g. `deal score >= 7`)
+- **Reusability** — adding a node never touches `BaseNode`; it's just a new data entry.
+- **Consistency** — every node shares the same styling and behavior automatically.
+- **Speed** — a new node is a few lines of data, not a new file.
+- **Single source of truth** — the toolbar, the `nodeTypes` map, and the in-app Node Guide are all
+  generated from the same list, so nothing drifts out of sync.
 
-### Merge  ·  _Logic_
-Combines multiple branches into one. **Pick First** takes the first available value;
-**Join All** returns them as a list.
-- **Inputs:** 1, 2
-- **Outputs:** output
-- **Fields:** Mode (Pick First / Join All)
+## How it works
 
-### Filter List  ·  _List_
-Filters a list, keeping (or dropping) items that match a condition.
-- **Inputs:** list
-- **Outputs:** output
-- **Fields:** Keep where (predicate) · Action (Keep / Drop)
+1. `definitions.js` holds the array of node configs.
+2. `index.js` turns each config into a component: `(props) => <BaseNode {...props} config={cfg} />`,
+   producing the `nodeTypes` map React Flow needs.
+3. `BaseNode` renders the title (icon + category color), the body (each field via `NodeField`, or a
+   custom `renderBody`), and the handles (auto-spaced on their side, with optional labels). It also
+   writes field values into the Zustand store so the pipeline data stays complete.
+4. The toolbar and the Node Guide iterate the same list, so new nodes appear everywhere.
 
-## Documents & RAG
+## How to add a new node
 
-### Document Loader  ·  _Data_
-Loads a deal document (CIM, financials, contract, data room) into the pipeline for extraction,
-indexing, or search. A source node — it starts a diligence flow.
-- **Inputs:** —
-- **Outputs:** document
-- **Fields:** Document (CIM / Financials / Contract / Data Room / Other) · Scan (OCR)
+Add one object to `nodeDefinitions` in `frontend/src/nodes/definitions.js`:
 
-### Context Builder  ·  _Knowledge_
-Ingests documents into a vector store — chunks and embeds them to build a searchable **context**
-(the RAG backend).
-- **Inputs:** documents
-- **Outputs:** context
-- **Fields:** Context name · Embedding model · Chunk size
+```js
+{
+  type: 'myNode',
+  title: 'My Node',
+  category: 'data',
+  icon: 'Boxes',
+  description: 'What it does.',
+  handles: [
+    { id: 'in',  type: 'target', side: 'left' },
+    { id: 'out', type: 'source', side: 'right' },
+  ],
+  fields: [
+    { name: 'mode', label: 'Mode', kind: 'select', options: ['A', 'B'], default: 'A' },
+  ],
+}
+```
 
-### Context Search  ·  _Knowledge_
-Retrieves the most relevant chunks from a context / vector store for a query (RAG retrieval).
-Wire a **Context Builder**'s output into its `context` input.
-- **Inputs:** context, query
-- **Outputs:** results
-- **Fields:** Results (top-K) · Rerank
-
-### Web Scraper  ·  _Data_
-Fetches and extracts content from a web page or site (by URL) for use downstream.
-- **Inputs:** url
-- **Outputs:** content
-- **Fields:** URL · Crawl depth
-
-## Utility
-
-### Note  ·  _Utility_
-A free-text sticky note for annotating the canvas. Has no connections.
-- **Inputs:** —
-- **Outputs:** —
-- **Fields:** the note text
+That's it — it now appears in the bottom toolbar, drops on the canvas, connects, and shows up in the
+Node Guide. No other file changes.
 
 ---
 
-## Example pipeline (RAG over a data room)
+## The new nodes I came up with
+
+Beyond the 4 originals (Input, Output, LLM, Text), these are the nodes I designed and implemented,
+chosen to reflect VectorShift's real market — **private-equity / RAG workflows** — and to stress-test
+the abstraction on different axes (multiple outputs, multiple inputs, varied field types, no handles).
+
+| Node | What it does |
+|------|--------------|
+| **Condition** | Routes the flow by a rule — sends the pipeline down a **True** or **False** branch (e.g. gate a memo on deal fit). *Multiple output handles.* |
+| **Merge** | Combines multiple branches into one — "Pick First" takes the first available value, "Join All" returns them as a list. *Multiple input handles.* |
+| **Filter List** | Filters a list, keeping (or dropping) items that match a condition. *List-type node.* |
+| **Document Loader** | Loads a deal document (CIM, financials, contract, data room) into the pipeline for extraction or search. *Source node.* |
+| **Context Builder** | The RAG ingestion backend — takes documents, chunks and embeds them into a vector store ("context"). *Text + select + number fields.* |
+| **Context Search** | RAG retrieval — searches a context / vector store for a query and returns the most relevant chunks. *Pairs with Context Builder via its `context` handle.* |
+| **Web Scraper** | Fetches and extracts content from a web page or site by URL. |
+| **Note** | A free-text sticky note for annotating the canvas. *No handles — the empty edge case.* |
+
+### Example RAG pipeline
 ```
-Document Loader (CIM) ──▶ Context Builder ──(context)──▶ Context Search ──▶ LLM ──▶ Output
-                                          Input ("key risks?") ──(query)──┘
+Document Loader ──▶ Context Builder ──(context)──▶ Context Search ──▶ LLM ──▶ Output
+                              Input ("query") ──────────┘
 Condition ("fits mandate?") can gate whether the flow continues.
 ```
-
-_This file is generated to match `frontend/src/nodes/definitions.js`. If you add or change a node
-there (including its `description`), update this doc and the in-app Guide reflects it automatically._
