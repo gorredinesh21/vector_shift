@@ -16,8 +16,18 @@ Living log of what's built, how to run it, and how to test it. Updated after eac
 
 **All four parts complete.**
 
-> ⚠️ Stale servers: earlier sessions left processes on ports **3000** and **8000**. If the app or
-> backend seems to run "old" code, stop those first (`netstat -ano | findstr :3000` → `taskkill /PID <pid> /F`).
+> ⚠️ **Stale servers gotcha (important):** earlier sessions can leave zombie processes on ports
+> **3000** (old frontend bundle) and **8000** (the *original* GET-only backend stub). The 8000 zombie
+> blocks your real backend from binding, so you end up testing against old code — e.g. the submit
+> modal shows the DAG message but **no node/edge counts**. Fix: kill them and restart both servers.
+> ```bash
+> netstat -ano | findstr :8000      # note the PID
+> taskkill /PID <pid> /F
+> netstat -ano | findstr :3000
+> taskkill /PID <pid> /F
+> ```
+> Then start fresh: `uvicorn main:app --reload` and `npm start`, and hard-refresh the browser
+> (Ctrl+Shift+R). The current code returns and displays all three numbers (verified by tests).
 
 ---
 

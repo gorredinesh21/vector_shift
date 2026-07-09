@@ -284,17 +284,24 @@ input[type='checkbox'] { accent-color: var(--accent); width: 15px; height: 15px;
 
 /* ── Handles + variable labels ───────────────────────────────────────────── */
 .react-flow__handle {
-  width: 11px;
-  height: 11px;
+  width: 15px;
+  height: 15px;
   border-radius: 50%;
   border: 2px solid #fff;
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
   transition: box-shadow 0.15s;
+}
+/* invisible larger grab area so the handle is easy to click/drag from */
+.react-flow__handle::after {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
 }
 .react-flow__handle-left { background: var(--handle-target); }
 .react-flow__handle-right { background: var(--handle-source); }
-.react-flow__handle:hover { box-shadow: 0 0 0 4px var(--accent-glow); }
-.react-flow__handle.connecting { box-shadow: 0 0 0 4px var(--accent-glow); }
+.react-flow__handle:hover { box-shadow: 0 0 0 5px var(--accent-glow); }
+.react-flow__handle.connecting { box-shadow: 0 0 0 5px var(--accent-glow); }
 
 .vs-handle-label {
   position: absolute;
