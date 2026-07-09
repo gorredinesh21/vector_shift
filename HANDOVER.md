@@ -11,7 +11,7 @@ Living log of what's built, how to run it, and how to test it. Updated after eac
 |------|--------|
 | Part 1 — Node abstraction + 4 refactors + 7 new nodes | ✅ Done |
 | Part 3 — Text node logic (resize + `{{ }}` handles) | ✅ Done |
-| Part 4 — Backend DAG + submit + glass modal | ⏳ Pending |
+| Part 4 — Backend DAG + submit + glass modal | ✅ Done |
 | Part 2 — Styling (light glass / maroon) | ⏳ Pending |
 
 ---
@@ -142,7 +142,47 @@ The Text node body (`nodes/textNode.js`, rendered via BaseNode's `renderBody`) n
 
 ---
 
+---
+
+## Part 4 — Backend Integration ✅
+
+### What was built
+End-to-end submit: the frontend POSTs the pipeline to FastAPI, which analyzes it and returns
+counts + DAG status, shown in a themed modal.
+
+**Backend (`backend/main.py`):**
+- Added `CORSMiddleware` (allows `http://localhost:3000`) — required or the browser blocks the call.
+- Pydantic models `Node`/`Edge`/`Pipeline` (extra React Flow fields are ignored).
+- `/pipelines/parse` is now **POST**; returns `{ num_nodes, num_edges, is_dag }`.
+- `is_dag()` uses **Kahn's algorithm** (topological sort): build in-degrees, peel off zero-in-degree
+  nodes; acyclic iff all nodes get visited. Self-loops and cycles correctly return `false`; edges to
+  unknown nodes are ignored.
+- Added `backend/requirements.txt` (`fastapi`, `uvicorn`).
+
+**Frontend:**
+- `submit.js` — reads `nodes`/`edges` from the store, POSTs JSON to `http://localhost:8000/pipelines/parse`,
+  handles loading + errors, opens the modal on response.
+- `ResultModal.js` — themed modal showing Nodes / Edges / Is-DAG and a friendly message (or an error
+  with a hint to start the backend). Replaces `window.alert()`.
+
+### How to test Part 4
+1. Start backend: `cd backend && pip install -r requirements.txt && uvicorn main:app --reload` (port 8000).
+   - ⚠️ If port 8000 is already in use by a stale server, stop it first (otherwise it shadows this one).
+2. Start frontend: `cd frontend && npm start`.
+3. Build a small pipeline (e.g. Input → LLM → Output, wired left→right), click **Submit Pipeline** →
+   a modal shows the node count, edge count, and “Valid pipeline” (is_dag = Yes).
+4. Create a **cycle** (wire a downstream node's output back into an upstream input) → Submit → modal
+   shows “Pipeline has a cycle” (is_dag = No).
+5. Stop the backend and Submit → a friendly error modal appears (proves error handling).
+
+### Verification done
+- Endpoint tested via FastAPI `TestClient` on 6 graphs (linear, cycle, self-loop, diamond, empty,
+  disconnected) — **6/6 correct**.
+- Live `uvicorn` server smoke test: linear → `is_dag:true`, cycle → `is_dag:false`, CORS preflight → `200`.
+- `npm run build` compiles cleanly.
+
+---
+
 ## Next up
-**Part 4** — backend `/pipelines/parse` (POST): compute `num_nodes`, `num_edges`, `is_dag`
-(Kahn's algorithm) + CORS; wire `submit.js` to POST the pipeline; show a themed result modal.
-Then **Part 2** (styling).
+**Part 2** — apply the light-glass / warm-maroon design system (see `EXECUTION.md` §2 tokens) across
+the header, bottom toolbar, nodes, handles, edges, submit button, and result modal.
