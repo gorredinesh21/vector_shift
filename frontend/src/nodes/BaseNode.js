@@ -9,7 +9,7 @@
 // node's dynamic-variable logic in Part 3).
 
 import { useState } from 'react';
-import { Handle, Position } from 'reactflow';
+import { Handle, Position, NodeResizer } from 'reactflow';
 import * as Icons from 'lucide-react';
 import { useStore } from '../store';
 import { NodeField } from './NodeField';
@@ -26,6 +26,7 @@ const resolveDefault = (def, id) => (typeof def === 'function' ? def(id) : def);
 
 export function BaseNode({ id, data, config }) {
   const updateNodeField = useStore((s) => s.updateNodeField);
+  const takeSnapshot = useStore((s) => s.takeSnapshot);
 
   const [values, setValues] = useState(() => {
     const init = {};
@@ -50,6 +51,13 @@ export function BaseNode({ id, data, config }) {
 
   return (
     <div className={`vs-node vs-node--${config.category || 'default'}`}>
+      <NodeResizer
+        minWidth={180}
+        minHeight={70}
+        onResizeStart={takeSnapshot}
+        lineClassName="vs-resize-line"
+        handleClassName="vs-resize-handle"
+      />
       <div className="vs-node__title">
         {Icon ? <Icon size={15} className="vs-node__icon" /> : null}
         <span>{config.title}</span>

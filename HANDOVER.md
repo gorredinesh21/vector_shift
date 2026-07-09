@@ -279,6 +279,11 @@ Added on request — undo/redo, edge deletion, and brighter wires.
 - Edges now render in a bright red (`#b83248`) at 2.5px with a filled arrowhead (`ArrowClosed`, 22px).
 - On **hover / selection** they thicken to 3.5px, brighten, and get a soft glow — easy to see and target.
 
+### 4. Resizable nodes
+- Every node is drag-resizable via React Flow's `NodeResizer` in `BaseNode`. **Select a node**, then
+  drag its edges/corners to resize (min 180×70). The glass card fills the new bounds (flex layout).
+- Resizing is **undoable** (snapshot taken on resize start). Resize handles are themed maroon.
+
 **New/changed files:** `store.js` (history + `removeEdge` + brighter edge defaults), `ui.js`
 (edge type, delete keys, drag snapshot, undo/redo shortcuts), `DeletableEdge.js` (new),
 `index.css` (edge brightening + ✕ button), `store.test.js` (new tests).
