@@ -28,9 +28,9 @@
   --text: #2a2328;
   --text-muted: #6e5c63;
 
-  /* handles */
-  --handle-source: #b83248; /* outputs (right) */
-  --handle-target: #9a8c90; /* inputs (left)  */
+  /* handles — high contrast so connection points are easy to find */
+  --handle-source: #b83248; /* outputs (right) = maroon */
+  --handle-target: #2563eb; /* inputs (left)  = blue   */
 
   /* fields */
   --field-bg: rgba(255, 255, 255, 0.72);
@@ -284,11 +284,11 @@ input[type='checkbox'] { accent-color: var(--accent); width: 15px; height: 15px;
 
 /* ── Handles + variable labels ───────────────────────────────────────────── */
 .react-flow__handle {
-  width: 15px;
-  height: 15px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
-  border: 2px solid #fff;
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+  border: 2.5px solid #fff;
+  box-shadow: 0 0 0 1.5px rgba(0, 0, 0, 0.18), 0 1px 3px rgba(0, 0, 0, 0.25);
   transition: box-shadow 0.15s;
 }
 /* invisible larger grab area so the handle is easy to click/drag from */
@@ -300,19 +300,25 @@ input[type='checkbox'] { accent-color: var(--accent); width: 15px; height: 15px;
 }
 .react-flow__handle-left { background: var(--handle-target); }
 .react-flow__handle-right { background: var(--handle-source); }
-.react-flow__handle:hover { box-shadow: 0 0 0 5px var(--accent-glow); }
-.react-flow__handle.connecting { box-shadow: 0 0 0 5px var(--accent-glow); }
+/* light the handles up when you hover the node or the handle itself */
+.react-flow__node:hover .react-flow__handle { box-shadow: 0 0 0 4px var(--accent-glow), 0 1px 3px rgba(0, 0, 0, 0.25); }
+.react-flow__handle:hover,
+.react-flow__handle.connecting { box-shadow: 0 0 0 6px var(--accent-glow), 0 1px 3px rgba(0, 0, 0, 0.25); }
 
+/* handle labels sit OUTSIDE the node edge so they never overlap the content */
 .vs-handle-label {
   position: absolute;
-  font-size: 0.77em;
+  font-size: 0.72em;
   color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.82);
+  padding: 1px 5px;
+  border-radius: 5px;
   transform: translateY(-50%);
   pointer-events: none;
   white-space: nowrap;
 }
-.vs-handle-label--left { left: 12px; }
-.vs-handle-label--right { right: 12px; }
+.vs-handle-label--left { right: 100%; margin-right: 8px; }
+.vs-handle-label--right { left: 100%; margin-left: 8px; }
 
 /* ── Edges / wires (bright + clearly arrowed) ────────────────────────────── */
 .react-flow__edge-path { stroke: var(--accent-bright); stroke-width: 2.5; }
