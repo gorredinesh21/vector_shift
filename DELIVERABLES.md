@@ -17,12 +17,12 @@ Legend: **Type** = Quantitative / Qualitative · **Status** = current state in t
 | N3 | 3 | Text node **height** changes as more text is entered | Node height grows to fit input (textarea auto-resize) | ✅ Done |
 | N4 | 3 | A **new left-side Handle per `{{ variable }}`** | One input handle created for each variable in the text | ✅ Done |
 | N5 | 3 | Only **valid JS variable names** create a handle | `{{ 2bad }}`, `{{ a b }}` etc. create no handle; duplicates dedupe | ✅ Done |
-| N6 | 4 | `submit.js` **sends nodes + edges** to `/pipelines/parse` on button click | POST fires with the full pipeline payload on click | ✅ Done |
-| N7 | 4 | Backend returns **`num_nodes`** (int) | Correct node count | ✅ Done |
-| N8 | 4 | Backend returns **`num_edges`** (int) | Correct edge count | ✅ Done |
-| N9 | 4 | Backend returns **`is_dag`** (bool) | Correct DAG / cycle detection (incl. self-loops) | ✅ Done (Kahn's algorithm) |
-| N10 | 4 | Response matches **exact format** `{num_nodes:int, num_edges:int, is_dag:bool}` | JSON shape matches spec | ✅ Done |
-| N11 | 4 | An **alert triggers on response** and displays the 3 values | Feedback shows num_nodes, num_edges, is_dag after submit | ✅ Done (themed modal) |
+| N6 | 4 | `submit.js` **sends nodes + edges** to `/pipelines/parse` on button click | POST fires with the full pipeline payload on click | ✅ Done — **test-verified** (submit.test.js) |
+| N7 | 4 | Backend returns **`num_nodes`** (int) | Correct node count | ✅ Done — **test-verified** (test_main.py) |
+| N8 | 4 | Backend returns **`num_edges`** (int) | Correct edge count | ✅ Done — **test-verified** (test_main.py) |
+| N9 | 4 | Backend returns **`is_dag`** (bool) | Correct DAG / cycle detection (incl. self-loops) | ✅ Done (Kahn's) — **test-verified** (8 graph cases) |
+| N10 | 4 | Response matches **exact format** `{num_nodes:int, num_edges:int, is_dag:bool}` | JSON shape + types match spec | ✅ Done — **test-verified** (exact keys + types) |
+| N11 | 4 | An **alert triggers on response** and displays the 3 values | Feedback shows num_nodes, num_edges, is_dag after submit | ✅ Done (themed modal) — **test-verified** (ResultModal + submit tests) |
 
 ## 🎨 Qualitative deliverables (judged on quality)
 

@@ -231,6 +231,31 @@ an accent only (buttons, wires, focus, active) — never behind body text.
 
 ---
 
+---
+
+## Automated tests
+
+**Backend** (`backend/test_main.py`, 13 tests — covers N7–N10):
+```bash
+cd backend && python -m pytest -v
+```
+Covers node/edge counts, DAG detection (linear, diamond, disconnected, empty, 2-/3-node cycles,
+self-loop, cycle hidden in a larger graph), exact response keys, and int/int/bool types.
+
+**Frontend** (`src/submit.test.js` + `src/ResultModal.test.js`, 5 tests — covers N6 + N11):
+```bash
+cd frontend && npm test         # (CI=true npx react-scripts test --watchAll=false)
+```
+Covers: clicking Submit POSTs `{nodes, edges}` to `/pipelines/parse`; the modal triggers on the
+response and shows num_nodes / num_edges / is_dag; the cycle message renders; and an error modal
+shows when the backend is unreachable.
+
+Latest run: **backend 13/13 passed · frontend 5/5 passed**.
+(A harmless "worker process failed to exit gracefully" line may appear after the frontend run — it's
+a Jest teardown warning, not a test failure.)
+
+---
+
 ## Project is feature-complete
 All four assessment parts are implemented, committed, and pushed. Suggested final step before
 submitting: run both servers, click through the test steps in each part above, and skim the diff.
