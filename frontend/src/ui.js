@@ -5,7 +5,7 @@
 import { useState, useRef, useCallback } from 'react';
 import ReactFlow, { Controls, Background, MiniMap } from 'reactflow';
 import { useStore } from './store';
-import { shallow } from 'zustand/shallow';
+import { useShallow } from 'zustand/react/shallow';
 import { nodeTypes } from './nodes';
 
 import 'reactflow/dist/style.css';
@@ -34,7 +34,7 @@ export const PipelineUI = () => {
     onNodesChange,
     onEdgesChange,
     onConnect
-  } = useStore(selector, shallow);
+  } = useStore(useShallow(selector));
 
   const getInitNodeData = (nodeID, type) => {
     let nodeData = { id: nodeID, nodeType: `${type}` };
