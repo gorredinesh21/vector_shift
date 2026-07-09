@@ -4,7 +4,7 @@
 
 import { useState } from 'react';
 import { useStore } from './store';
-import { shallow } from 'zustand/shallow';
+import { useShallow } from 'zustand/react/shallow';
 import { ResultModal } from './ResultModal';
 
 const API_URL = 'http://localhost:8000/pipelines/parse';
@@ -12,7 +12,7 @@ const API_URL = 'http://localhost:8000/pipelines/parse';
 const selector = (state) => ({ nodes: state.nodes, edges: state.edges });
 
 export const SubmitButton = () => {
-  const { nodes, edges } = useStore(selector, shallow);
+  const { nodes, edges } = useStore(useShallow(selector));
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
