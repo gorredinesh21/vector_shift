@@ -25,10 +25,10 @@ test('POSTs {nodes, edges} and shows a modal with num_nodes, num_edges, is_dag',
   render(<SubmitButton />);
   fireEvent.click(screen.getByRole('button', { name: /submit pipeline/i }));
 
-  // the alert/modal triggers on the response and shows the values
+  // the result banner shows the calculated values
   expect(await screen.findByText('2')).toBeInTheDocument();  // num_nodes
   expect(screen.getByText('1')).toBeInTheDocument();          // num_edges
-  expect(screen.getByText('Yes')).toBeInTheDocument();        // is_dag
+  expect(screen.getByText(/Yes/)).toBeInTheDocument();        // is_dag
 
   // it POSTed the pipeline correctly
   expect(global.fetch).toHaveBeenCalledTimes(1);

@@ -378,27 +378,51 @@ input[type='checkbox'] { accent-color: var(--accent); width: 15px; height: 15px;
   overflow: hidden;
   border: 1px solid var(--glass-border);
   box-shadow: var(--glass-shadow);
+  background: rgba(255, 255, 255, 0.9);
 }
 .react-flow__attribution { display: none; }
 
-/* ── Submit button + inline result ───────────────────────────────────────── */
+/* ── Submit button ───────────────────────────────────────────────────────── */
 .vs-submit { display: flex; align-items: center; gap: 12px; }
+
+/* Result floats over the canvas, top-center — always visible, never cramped */
 .vs-result {
+  position: fixed;
+  top: 74px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 60;
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 7px 14px;
-  font-size: 13px;
+  gap: 16px;
+  padding: 12px 18px;
+  font-size: 14px;
   color: var(--text);
   background: var(--glass-bg-strong);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
   border: 1px solid var(--glass-border);
-  border-radius: var(--radius-sm);
-  box-shadow: var(--glass-shadow);
+  border-radius: 14px;
+  box-shadow: 0 12px 40px rgba(80, 20, 35, 0.2);
   white-space: nowrap;
+  animation: vs-pop 0.2s ease;
 }
-.vs-result strong { color: var(--accent); font-size: 15px; }
-.vs-result--error { color: var(--accent-strong); }
-.vs-result--error strong { color: var(--accent-strong); }
+.vs-result__stat strong { color: var(--accent); font-size: 20px; font-weight: 700; margin-right: 2px; }
+.vs-result__divider { width: 1px; height: 22px; background: var(--glass-border); }
+.vs-result__close {
+  margin-left: 4px;
+  width: 22px;
+  height: 22px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.06);
+  color: var(--text-muted);
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+}
+.vs-result__close:hover { background: rgba(0, 0, 0, 0.12); color: var(--text); }
+.vs-result--error { color: var(--accent-strong); font-size: 13px; }
 .vs-submit__btn {
   font-family: inherit;
   font-size: 14px;

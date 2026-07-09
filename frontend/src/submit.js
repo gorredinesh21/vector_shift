@@ -56,17 +56,21 @@ export const SubmitButton = () => {
 
       {result && (
         <div className="vs-result" role="status">
-          <span className="vs-result__stat"><strong>{result.num_nodes}</strong> nodes</span>
-          <span className="vs-result__stat"><strong>{result.num_edges}</strong> edges</span>
+          <span className="vs-result__stat"><strong>{result.num_nodes}</strong> Nodes</span>
+          <span className="vs-result__divider" />
+          <span className="vs-result__stat"><strong>{result.num_edges}</strong> Edges</span>
+          <span className="vs-result__divider" />
           <span className="vs-result__stat">
-            DAG:&nbsp;<strong>{result.is_dag ? 'Yes' : 'No'}</strong>
+            DAG:&nbsp;<strong>{result.is_dag ? 'Yes ✓' : 'No ✕'}</strong>
           </span>
+          <button className="vs-result__close" onClick={() => setResult(null)} aria-label="Dismiss">×</button>
         </div>
       )}
 
       {error && (
         <div className="vs-result vs-result--error" role="status">
           ⚠ {error} — is the backend running on :8000?
+          <button className="vs-result__close" onClick={() => setError(null)} aria-label="Dismiss">×</button>
         </div>
       )}
     </div>
