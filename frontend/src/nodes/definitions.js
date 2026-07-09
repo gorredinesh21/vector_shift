@@ -112,21 +112,38 @@ export const nodeDefinitions = [
     ],
   },
   {
-    // Ask a question over a data room / knowledge base and get a *sourced* answer
-    // (the thing PE actually values). Two outputs: the answer + its citations.
-    type: 'semanticSearch',
-    title: 'Data Room Q&A',
+    // RAG ingestion: take documents, chunk + embed them into a vector store ("context").
+    type: 'contextBuilder',
+    title: 'Context Builder',
     category: 'knowledge',
-    icon: 'Search',
-    description: 'Answers a question over a data room / knowledge base and returns a sourced answer with citations.',
+    icon: 'Database',
+    description: 'Ingests documents into a vector store — chunks and embeds them to build a searchable context (the RAG backend).',
     handles: [
-      { id: 'question', type: 'target', side: 'left' },
-      { id: 'answer', type: 'source', side: 'right', label: 'Answer' },
-      { id: 'sources', type: 'source', side: 'right', label: 'Sources' },
+      { id: 'documents', type: 'target', side: 'left' },
+      { id: 'context', type: 'source', side: 'right' },
     ],
     fields: [
-      { name: 'source', label: 'Search in', kind: 'select', options: ['Data Room', 'Knowledge Base', 'Financials', 'Legal Docs'], default: 'Data Room' },
-      { name: 'citations', label: 'Citations', kind: 'number', default: '3', min: 1, max: 10 },
+      { name: 'contextName', label: 'Context name', kind: 'text', placeholder: 'e.g. project-atlas-dataroom' },
+      { name: 'embedModel', label: 'Embedding model', kind: 'select',
+        options: ['text-embedding-3-large', 'text-embedding-3-small', 'cohere-embed-v3'], default: 'text-embedding-3-large' },
+      { name: 'chunkSize', label: 'Chunk size', kind: 'number', default: '512', min: 128, max: 2048 },
+    ],
+  },
+  {
+    // RAG retrieval: search across available contexts / vector stores for a query.
+    type: 'contextSearch',
+    title: 'Context Search',
+    category: 'knowledge',
+    icon: 'Search',
+    description: 'Retrieves the most relevant chunks from a context / vector store for a query (RAG retrieval).',
+    handles: [
+      { id: 'context', type: 'target', side: 'left', label: 'context' },
+      { id: 'query', type: 'target', side: 'left', label: 'query' },
+      { id: 'results', type: 'source', side: 'right' },
+    ],
+    fields: [
+      { name: 'topK', label: 'Results', kind: 'number', default: '5', min: 1, max: 20 },
+      { name: 'rerank', label: 'Rerank', kind: 'checkbox', default: false },
     ],
   },
   {
@@ -146,19 +163,19 @@ export const nodeDefinitions = [
     ],
   },
   {
-    // Enrich/research a target company from external sources (sourcing stage).
+    // Fetch + extract content from a web page/site by URL.
     type: 'webScraper',
-    title: 'Company Research',
+    title: 'Web Scraper',
     category: 'data',
-    icon: 'Building2',
-    description: 'Researches and enriches a target company from external sources (web, news, filings).',
+    icon: 'Globe',
+    description: 'Fetches and extracts content from a web page or site (by URL) for use downstream.',
     handles: [
-      { id: 'company', type: 'target', side: 'left' },
-      { id: 'profile', type: 'source', side: 'right' },
+      { id: 'url', type: 'target', side: 'left' },
+      { id: 'content', type: 'source', side: 'right' },
     ],
     fields: [
-      { name: 'company', label: 'Company', kind: 'text', placeholder: 'Name or website' },
-      { name: 'sources', label: 'Sources', kind: 'select', options: ['Web', 'News', 'Filings', 'All'], default: 'All' },
+      { name: 'url', label: 'URL', kind: 'text', placeholder: 'https://example.com' },
+      { name: 'depth', label: 'Crawl depth', kind: 'number', default: '1', min: 1, max: 5 },
     ],
   },
   {

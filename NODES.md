@@ -57,28 +57,34 @@ Filters a list, keeping (or dropping) items that match a condition.
 - **Outputs:** output
 - **Fields:** Keep where (predicate) · Action (Keep / Drop)
 
-## Documents & research (private-equity)
-
-### Data Room Q&A  ·  _Knowledge_
-Answers a question over a data room / knowledge base and returns a **sourced** answer with
-citations — the analyst-facing version of semantic search.
-- **Inputs:** question
-- **Outputs:** Answer, Sources
-- **Fields:** Search in (Data Room / Knowledge Base / Financials / Legal Docs) · Citations (#)
+## Documents & RAG
 
 ### Document Loader  ·  _Data_
-Loads a deal document (CIM, financials, contract, data room) into the pipeline for extraction
-or Q&A. A source node — it starts a diligence flow.
+Loads a deal document (CIM, financials, contract, data room) into the pipeline for extraction,
+indexing, or search. A source node — it starts a diligence flow.
 - **Inputs:** —
 - **Outputs:** document
 - **Fields:** Document (CIM / Financials / Contract / Data Room / Other) · Scan (OCR)
 
-### Company Research  ·  _Data_
-Researches and enriches a target company from external sources (web, news, filings) — the
-sourcing stage.
-- **Inputs:** company
-- **Outputs:** profile
-- **Fields:** Company (name or website) · Sources (Web / News / Filings / All)
+### Context Builder  ·  _Knowledge_
+Ingests documents into a vector store — chunks and embeds them to build a searchable **context**
+(the RAG backend).
+- **Inputs:** documents
+- **Outputs:** context
+- **Fields:** Context name · Embedding model · Chunk size
+
+### Context Search  ·  _Knowledge_
+Retrieves the most relevant chunks from a context / vector store for a query (RAG retrieval).
+Wire a **Context Builder**'s output into its `context` input.
+- **Inputs:** context, query
+- **Outputs:** results
+- **Fields:** Results (top-K) · Rerank
+
+### Web Scraper  ·  _Data_
+Fetches and extracts content from a web page or site (by URL) for use downstream.
+- **Inputs:** url
+- **Outputs:** content
+- **Fields:** URL · Crawl depth
 
 ## Utility
 
@@ -90,11 +96,11 @@ A free-text sticky note for annotating the canvas. Has no connections.
 
 ---
 
-## Example pipeline
+## Example pipeline (RAG over a data room)
 ```
-Document Loader (CIM) ──▶ Data Room Q&A ("key risks?") ──▶ LLM (summarize) ──▶ Output
-Company Research (target) ─────────────────────────────────┘
-Condition ("fits mandate?") gates whether the flow continues.
+Document Loader (CIM) ──▶ Context Builder ──(context)──▶ Context Search ──▶ LLM ──▶ Output
+                                          Input ("key risks?") ──(query)──┘
+Condition ("fits mandate?") can gate whether the flow continues.
 ```
 
 _This file is generated to match `frontend/src/nodes/definitions.js`. If you add or change a node

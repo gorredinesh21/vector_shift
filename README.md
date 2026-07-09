@@ -122,14 +122,15 @@ Wire the frontend to the backend end-to-end:
   - Minor defaults (taken unless changed): `lucide-react` icons per node; subtle per-category title tint;
     **Inter** font; small label beside each `{{ }}` handle; slim glass header with a "VectorShift" wordmark.
 - **Part 4 result display:** a **styled glass modal/toast** (matching the theme) — not a native `alert()`.
-- **7 new nodes to build** (chosen to stress-test the abstraction on *different* axes):
+- **8 new nodes to build** (chosen to stress-test the abstraction on *different* axes):
   1. **Condition (If/Else)** — 1 input → 2 outputs *(tests multiple output handles / branching)*
   2. **Merge** — 2+ inputs → 1 output *(tests multiple input handles)*
   3. **Filter List** — list in/out + predicate *(tests list-type nodes)*
-  4. **Data Room Q&A** — question → answer + sources; source dropdown + citations *(PE: sourced Q&A over a data room)*
-  5. **Document Loader** — doc type (CIM/Financials/…) + OCR checkbox *(PE: load a deal document)*
-  6. **Company Research** — company + sources dropdown *(PE: enrich a target company)*
-  7. **Note / Sticky** — textarea, **0 handles** *(tests the empty / no-handles edge case)*
+  4. **Document Loader** — doc type (CIM/Financials/…) + OCR checkbox *(load a deal document)*
+  5. **Context Builder** — RAG ingest: chunk + embed docs into a vector store *(text + select + number fields)*
+  6. **Context Search** — RAG retrieval from a context; top-K + rerank *(number + checkbox)*
+  7. **Web Scraper** — URL + crawl depth *(fetch web content)*
+  8. **Note / Sticky** — textarea, **0 handles** *(tests the empty / no-handles edge case)*
 
 ## ✅ Deliverables Checklist
 
