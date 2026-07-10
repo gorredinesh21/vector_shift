@@ -5,22 +5,25 @@ Serverless models sometimes return 503 "model is loading" — we back off and re
 import logging
 import time
 
-from huggingface_hub import InferenceClient
-
 import config
 from errors import LLMError
 from services import structured
 
 log = logging.getLogger(__name__)
 
-_client: InferenceClient | None = None
+_client = None
 
 
-def _get_client() -> InferenceClient:
+def _get_client():
+    """Create the HF client lazily so importing this module never needs the SDK."""
     global _client
     if _client is None:
         if not config.HF_TOKEN:
             raise LLMError("HF_TOKEN is not set — put it in backend/.env")
+        try:
+            from huggingface_hub import InferenceClient
+        except ImportError as exc:
+            raise LLMError("huggingface_hub not installed — run: pip install -r requirements.txt") from exc
         _client = InferenceClient(token=config.HF_TOKEN)
     return _client
 
@@ -60,9 +63,9 @@ def complete(system: str, prompt: str, *, model: str | None = None, max_tokens: 
         )
         return resp.choices[0].message.content or ""
 
-    print(f"[hf] LLM call → {model} (prompt {len(prompt)} chars) …", flush=True)
+    print(f"[hf] LLM call -> {model} (prompt {len(prompt)} chars) ...", flush=True)
     text = _with_retry(_call).strip()
-    print(f"[hf] LLM ✓ ({len(text)} chars)", flush=True)
+    print(f"[hf] LLM ok ({len(text)} chars)", flush=True)
     return text
 
 

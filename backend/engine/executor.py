@@ -55,7 +55,7 @@ def iter_run(nodes_in: list, edges: list):
     final: dict = {}
 
     order = _topo_order(list(nodes_by_id), edges)
-    print(f"\n[run] ▶ START — {len(nodes_by_id)} nodes, {len(edges)} edges, order: {order}", flush=True)
+    print(f"\n[run] START - {len(nodes_by_id)} nodes, {len(edges)} edges, order: {order}", flush=True)
 
     for nid in order:
         node = nodes_by_id[nid]
@@ -71,21 +71,21 @@ def iter_run(nodes_in: list, edges: list):
         has_incoming = len(incoming[nid]) > 0
         has_value = any(v is not None for v in node_inputs.values())
         if has_incoming and not has_value:
-            print(f"[run] · skip {nid} ({node.type}) — no input (upstream branch not taken)", flush=True)
+            print(f"[run] skip {nid} ({node.type}) - no input (upstream branch not taken)", flush=True)
             results[nid] = {"inputs": node_inputs, "outputs": {}, "status": "skipped", "error": None}
             yield {"event": "node", "id": nid, "status": "skipped", "result": results[nid]}
             continue
 
         executor = get_executor(node.type)
         if executor is None:
-            print(f"[run] ✗ {nid} — no executor for type '{node.type}'", flush=True)
+            print(f"[run] ERROR {nid} - no executor for type '{node.type}'", flush=True)
             results[nid] = {"inputs": node_inputs, "outputs": {}, "status": "error",
                             "error": f"No executor registered for type '{node.type}'"}
             yield {"event": "node", "id": nid, "status": "error", "result": results[nid]}
             continue
 
         # tell the UI this node is now working (light it up)
-        print(f"[run] ▶ running {nid} ({node.type}) …", flush=True)
+        print(f"[run] running {nid} ({node.type}) ...", flush=True)
         yield {"event": "node_start", "id": nid}
         try:
             out = executor(node_inputs, node.data or {}) or {}
@@ -94,15 +94,15 @@ def iter_run(nodes_in: list, edges: list):
             if node.type == "customOutput":
                 label = (node.data or {}).get("outputName") or nid
                 final[label] = node_inputs.get("value")
-            print(f"[run] ✓ done {nid}", flush=True)
+            print(f"[run] done {nid}", flush=True)
             yield {"event": "node", "id": nid, "status": "done", "result": results[nid]}
         except Exception as exc:  # noqa: BLE001 - report, never crash the run
             log.exception("Node %s (%s) failed", nid, node.type)
-            print(f"[run] ✗ ERROR {nid} ({node.type}): {exc}", flush=True)
+            print(f"[run] ERROR {nid} ({node.type}): {exc}", flush=True)
             results[nid] = {"inputs": node_inputs, "outputs": {}, "status": "error", "error": str(exc)}
             yield {"event": "node", "id": nid, "status": "error", "result": results[nid]}
 
-    print("[run] ■ COMPLETE\n", flush=True)
+    print("[run] COMPLETE\n", flush=True)
     yield {"event": "complete", "results": results, "final": final}
 
 

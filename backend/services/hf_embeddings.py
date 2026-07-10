@@ -1,21 +1,24 @@
 """Embeddings over the Hugging Face Inference API (feature-extraction)."""
 import logging
 
-from huggingface_hub import InferenceClient
-
 import config
 from errors import EmbeddingError
 
 log = logging.getLogger(__name__)
 
-_client: InferenceClient | None = None
+_client = None
 
 
-def _get_client() -> InferenceClient:
+def _get_client():
+    """Create the HF client lazily so importing this module never needs the SDK."""
     global _client
     if _client is None:
         if not config.HF_TOKEN:
             raise EmbeddingError("HF_TOKEN is not set — put it in backend/.env")
+        try:
+            from huggingface_hub import InferenceClient
+        except ImportError as exc:
+            raise EmbeddingError("huggingface_hub not installed — run: pip install -r requirements.txt") from exc
         _client = InferenceClient(token=config.HF_TOKEN)
     return _client
 
@@ -34,7 +37,7 @@ def embed(texts: list[str], *, model: str | None = None) -> list[list[float]]:
     """Return one embedding vector per input text."""
     client = _get_client()
     model = model or config.HF_EMBED_MODEL
-    print(f"[hf] embedding {len(texts)} text(s) → {model} …", flush=True)
+    print(f"[hf] embedding {len(texts)} text(s) -> {model} ...", flush=True)
     out: list[list[float]] = []
     for t in texts:
         try:

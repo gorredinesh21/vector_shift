@@ -1,9 +1,12 @@
-"""Concurrent web scraping (asyncio + httpx) with per-site error isolation."""
+"""Concurrent web scraping (asyncio + httpx) with per-site error isolation.
+
+httpx and BeautifulSoup are imported lazily so importing this module never
+requires them (basic nodes still work if they aren't installed).
+"""
+from __future__ import annotations
+
 import asyncio
 import logging
-
-import httpx
-from bs4 import BeautifulSoup
 
 import config
 
@@ -14,6 +17,7 @@ _MAX_CHARS = 6000  # cap text per page so prompts stay manageable
 
 
 def _extract(html: str) -> str:
+    from bs4 import BeautifulSoup
     soup = BeautifulSoup(html, "lxml")
     for tag in soup(["script", "style", "noscript", "header", "footer", "nav"]):
         tag.decompose()
@@ -21,7 +25,7 @@ def _extract(html: str) -> str:
     return text[:_MAX_CHARS]
 
 
-async def _scrape_one(client: httpx.AsyncClient, url: str) -> dict:
+async def _scrape_one(client, url: str) -> dict:
     try:
         resp = await client.get(url, timeout=config.HTTP_TIMEOUT, follow_redirects=True)
         resp.raise_for_status()
@@ -32,6 +36,7 @@ async def _scrape_one(client: httpx.AsyncClient, url: str) -> dict:
 
 
 async def _scrape_many(urls: list[str]) -> list[dict]:
+    import httpx
     async with httpx.AsyncClient(headers=_HEADERS) as client:
         return await asyncio.gather(*(_scrape_one(client, u) for u in urls))
 
@@ -41,7 +46,7 @@ def scrape(urls: list[str]) -> list[dict]:
     urls = urls[: config.MAX_SCRAPE_SITES]
     if not urls:
         return []
-    print(f"[web] scraping {len(urls)} site(s) concurrently …", flush=True)
+    print(f"[web] scraping {len(urls)} site(s) concurrently ...", flush=True)
     results = asyncio.run(_scrape_many(urls))
     ok = sum(1 for r in results if r.get("ok"))
     print(f"[web] scraped {ok}/{len(urls)} ok", flush=True)

@@ -29,7 +29,7 @@ def _llm_fallback(query: str, max_results: int) -> list[str]:
 
 def search_links(query: str, max_results: int = config.MAX_SCRAPE_SITES) -> list[str]:
     """Return real URLs for a query; fall back to LLM-proposed URLs on failure."""
-    print(f"[web] searching DuckDuckGo: {query!r} …", flush=True)
+    print(f"[web] searching DuckDuckGo: {query!r} ...", flush=True)
     try:
         links = _ddg(query, max_results)
         if links:

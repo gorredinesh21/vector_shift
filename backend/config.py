@@ -2,10 +2,14 @@
 import os
 from pathlib import Path
 
-from dotenv import load_dotenv
-
 _BASE = Path(__file__).resolve().parent
-load_dotenv(_BASE / ".env")
+
+# Load .env if python-dotenv is available; otherwise fall back to real env vars.
+try:
+    from dotenv import load_dotenv
+    load_dotenv(_BASE / ".env")
+except Exception:  # noqa: BLE001
+    pass
 
 HF_TOKEN = os.getenv("HF_TOKEN", "")
 HF_LLM_MODEL = os.getenv("HF_LLM_MODEL", "meta-llama/Llama-3.2-3B-Instruct")
