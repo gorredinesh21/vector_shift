@@ -46,6 +46,7 @@ def build(doc_name: str, text: str) -> tuple[str, int]:
     if not chunks:
         raise ValueError("No text to index")
     collection = f"doc_{uuid.uuid4().hex[:12]}"
+    print(f"[rag] building context '{doc_name}' — {len(chunks)} chunks", flush=True)
     embeds = hf_embeddings.embed(chunks)
     col = _get_client().create_collection(name=collection, metadata={"doc": doc_name})
     col.add(

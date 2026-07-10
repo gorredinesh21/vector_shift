@@ -29,13 +29,15 @@ def _llm_fallback(query: str, max_results: int) -> list[str]:
 
 def search_links(query: str, max_results: int = config.MAX_SCRAPE_SITES) -> list[str]:
     """Return real URLs for a query; fall back to LLM-proposed URLs on failure."""
+    print(f"[web] searching DuckDuckGo: {query!r} …", flush=True)
     try:
         links = _ddg(query, max_results)
         if links:
+            print(f"[web] found {len(links)} link(s)", flush=True)
             return links[:max_results]
-        log.warning("DuckDuckGo returned no results; using LLM fallback")
+        print("[web] no results; using LLM fallback for URLs", flush=True)
     except Exception as exc:  # noqa: BLE001
-        log.warning("DuckDuckGo search failed (%s); using LLM fallback", exc)
+        print(f"[web] search failed ({str(exc)[:80]}); using LLM fallback", flush=True)
     return _llm_fallback(query, max_results)
 
 

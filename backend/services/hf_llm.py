@@ -36,7 +36,8 @@ def _with_retry(fn, *, attempts: int = 4, base_delay: float = 2.0):
             # retry only on transient "loading"/503/timeout
             if any(k in msg for k in ("loading", "503", "timeout", "429")):
                 delay = base_delay * (2 ** i)
-                log.warning("HF transient error (%s); retrying in %.1fs", exc, delay)
+                print(f"[hf] transient error ({str(exc)[:80]}); retry in {delay:.0f}s "
+                      f"({i + 1}/{attempts})", flush=True)
                 time.sleep(delay)
                 continue
             break
@@ -59,7 +60,10 @@ def complete(system: str, prompt: str, *, model: str | None = None, max_tokens: 
         )
         return resp.choices[0].message.content or ""
 
-    return _with_retry(_call).strip()
+    print(f"[hf] LLM call → {model} (prompt {len(prompt)} chars) …", flush=True)
+    text = _with_retry(_call).strip()
+    print(f"[hf] LLM ✓ ({len(text)} chars)", flush=True)
+    return text
 
 
 def judge_boolean(question: str, *, model: str | None = None) -> bool:

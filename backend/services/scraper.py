@@ -41,7 +41,11 @@ def scrape(urls: list[str]) -> list[dict]:
     urls = urls[: config.MAX_SCRAPE_SITES]
     if not urls:
         return []
-    return asyncio.run(_scrape_many(urls))
+    print(f"[web] scraping {len(urls)} site(s) concurrently …", flush=True)
+    results = asyncio.run(_scrape_many(urls))
+    ok = sum(1 for r in results if r.get("ok"))
+    print(f"[web] scraped {ok}/{len(urls)} ok", flush=True)
+    return results
 
 
 if __name__ == "__main__":  # live smoke test (personal laptop)

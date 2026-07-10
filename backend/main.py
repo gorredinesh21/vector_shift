@@ -2,6 +2,7 @@ from collections import defaultdict, deque
 from typing import List
 
 import json
+import logging
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -13,6 +14,11 @@ import db
 import nodes  # noqa: F401  (registers node executors)
 from engine.executor import iter_run, run_pipeline
 from schemas import RunRequest, RunResponse, SavePipelineRequest
+
+# Show our INFO logs in the terminal (alongside uvicorn's).
+logging.basicConfig(level=logging.INFO, format="%(levelname)s | %(name)s | %(message)s")
+for _n in ("engine", "services", "nodes"):
+    logging.getLogger(_n).setLevel(logging.INFO)
 
 app = FastAPI(title="VectorShift Pipeline API")
 

@@ -34,6 +34,7 @@ def embed(texts: list[str], *, model: str | None = None) -> list[list[float]]:
     """Return one embedding vector per input text."""
     client = _get_client()
     model = model or config.HF_EMBED_MODEL
+    print(f"[hf] embedding {len(texts)} text(s) → {model} …", flush=True)
     out: list[list[float]] = []
     for t in texts:
         try:
