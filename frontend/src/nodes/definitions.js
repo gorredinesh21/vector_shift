@@ -23,6 +23,7 @@ export const nodeDefinitions = [
       { name: 'inputName', label: 'Name', kind: 'text',
         default: (id) => id.replace('customInput-', 'input_') },
       { name: 'inputType', label: 'Type', kind: 'select', options: ['Text', 'File'], default: 'Text' },
+      { name: 'value', label: 'Value', kind: 'textarea', placeholder: 'Starting value for the pipeline…' },
     ],
   },
   {
@@ -158,6 +159,7 @@ export const nodeDefinitions = [
       { id: 'document', type: 'source', side: 'right' },
     ],
     fields: [
+      { name: 'path', label: 'File path', kind: 'text', placeholder: 'C:\\deals\\cim.pdf' },
       { name: 'docType', label: 'Document', kind: 'select', options: ['CIM', 'Financials', 'Contract', 'Data Room', 'Other'], default: 'CIM' },
       { name: 'ocr', label: 'Scan (OCR)', kind: 'checkbox', default: false },
     ],
@@ -168,14 +170,14 @@ export const nodeDefinitions = [
     title: 'Web Scraper',
     category: 'data',
     icon: 'Globe',
-    description: 'Fetches and extracts content from a web page or site (by URL) for use downstream.',
+    description: 'Researches a topic on the web (AI finds sites → scrapes them → AI summarizes without losing context).',
     handles: [
-      { id: 'url', type: 'target', side: 'left' },
-      { id: 'content', type: 'source', side: 'right' },
+      { id: 'query', type: 'target', side: 'left' },
+      { id: 'summary', type: 'source', side: 'right' },
     ],
     fields: [
-      { name: 'url', label: 'URL', kind: 'text', placeholder: 'https://example.com' },
-      { name: 'depth', label: 'Crawl depth', kind: 'number', default: '1', min: 1, max: 5 },
+      { name: 'query', label: 'Topic / question', kind: 'text', placeholder: 'e.g. EV battery market 2025' },
+      { name: 'maxSites', label: 'Max sites', kind: 'number', default: '5', min: 1, max: 10 },
     ],
   },
   {

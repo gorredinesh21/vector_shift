@@ -3,6 +3,7 @@ import { Workflow, BookOpen } from 'lucide-react';
 import { PipelineToolbar } from './toolbar';
 import { PipelineUI } from './ui';
 import { SubmitButton } from './submit';
+import { RunButton } from './RunButton';
 import { HistoryControls } from './HistoryControls';
 import { NodeGuide } from './NodeGuide';
 
@@ -28,6 +29,7 @@ function App() {
           >
             <BookOpen size={16} />
           </button>
+          <RunButton />
           <SubmitButton />
         </div>
       </header>

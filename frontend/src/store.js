@@ -30,6 +30,14 @@ export const useStore = create((set, get) => ({
     past: [],
     future: [],
 
+    // ── run state (Part: functional execution) ────────────────────────────
+    runStatus: 'idle',          // 'idle' | 'running' | 'done' | 'error'
+    runResults: {},             // nodeId -> { inputs, outputs, status, error }
+    runFinal: {},               // Output-node values
+    setRunStatus: (runStatus) => set({ runStatus }),
+    setRunResults: (runResults, runFinal = {}) => set({ runResults, runFinal }),
+    clearRun: () => set({ runStatus: 'idle', runResults: {}, runFinal: {} }),
+
     // ── history ──────────────────────────────────────────────────────────
     // record the current graph before a structural change so it can be undone
     takeSnapshot: () => {

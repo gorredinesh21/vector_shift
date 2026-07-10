@@ -13,6 +13,7 @@ import { Handle, Position, NodeResizer } from 'reactflow';
 import * as Icons from 'lucide-react';
 import { useStore } from '../store';
 import { NodeField } from './NodeField';
+import { NodeIO } from '../NodeIO';
 
 const sideToPosition = {
   left: Position.Left,
@@ -60,6 +61,10 @@ export function BaseNode({ id, data, config }) {
     updateNodeField(id, name, val); // keep the store in sync so Part 4 submit sees it
   };
 
+  // run state for this node (populated after a Run)
+  const runResult = useStore((s) => s.runResults[id]);
+  const [showIO, setShowIO] = useState(false);
+
   // group handles by side so multiple handles on the same edge space evenly
   const handlesBySide = {};
   (config.handles || []).forEach((h) => {
@@ -80,7 +85,18 @@ export function BaseNode({ id, data, config }) {
       <div className="vs-node__title" title={config.description}>
         {Icon ? <Icon size={15} className="vs-node__icon" /> : null}
         <span>{config.title}</span>
+        {runResult ? <span className={`vs-node__dot vs-node__dot--${runResult.status}`} title={runResult.status} /> : null}
+        <button
+          className="vs-node__io nodrag"
+          onClick={(e) => { e.stopPropagation(); setShowIO((v) => !v); }}
+          title="View inputs / outputs"
+          aria-label="View inputs and outputs"
+        >
+          <Icons.Info size={13} />
+        </button>
       </div>
+
+      {showIO ? <NodeIO nodeId={id} onClose={() => setShowIO(false)} /> : null}
 
       <div className="vs-node__body">
         {config.renderBody

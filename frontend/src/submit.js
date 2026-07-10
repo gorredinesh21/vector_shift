@@ -9,8 +9,7 @@
 import { useState } from 'react';
 import { useStore } from './store';
 import { useShallow } from 'zustand/react/shallow';
-
-const API_URL = 'http://localhost:8000/pipelines/parse';
+import { parsePipeline } from './api';
 
 const selector = (state) => ({ nodes: state.nodes, edges: state.edges });
 
@@ -31,13 +30,7 @@ export const SubmitButton = () => {
     console.log(`[VectorShift] ${nodes.length} nodes, ${edges.length} edges on canvas`);
 
     try {
-      const res = await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-      if (!res.ok) throw new Error(`Server responded with ${res.status}`);
-      const data = await res.json();
+      const data = await parsePipeline(nodes, edges);
       console.log('[VectorShift] backend response:', data);
       setResult(data);
     } catch (e) {
