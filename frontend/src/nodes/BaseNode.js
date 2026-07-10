@@ -73,8 +73,13 @@ export function BaseNode({ id, data, config }) {
 
   const Icon = config.icon && Icons[config.icon] ? Icons[config.icon] : null;
 
+  const running = runResult?.status === 'running';
+
   return (
-    <div ref={rootRef} className={`vs-node vs-node--${config.category || 'default'}`}>
+    <div
+      ref={rootRef}
+      className={`vs-node vs-node--${config.category || 'default'}${running ? ' vs-node--running' : ''}`}
+    >
       <NodeResizer
         minWidth={180}
         minHeight={70}

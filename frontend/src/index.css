@@ -140,6 +140,17 @@ code {
 .vs-node__dot--done { background: #2f9e44; }
 .vs-node__dot--error { background: var(--accent-bright); }
 .vs-node__dot--skipped { background: #9a8c90; }
+.vs-node__dot--running { background: var(--accent-bright); animation: vs-pulse 0.9s ease-in-out infinite; }
+
+/* the currently-executing node lights up */
+.vs-node--running {
+  box-shadow: 0 0 0 2px var(--accent), 0 0 22px var(--accent-glow), var(--glass-shadow);
+}
+
+@keyframes vs-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.35; transform: scale(0.65); }
+}
 
 /* per-node "view I/O" button */
 .vs-node__io {

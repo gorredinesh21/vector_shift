@@ -49,6 +49,9 @@ Frontend "Run" ─▶ POST /pipelines/run { nodes, edges }
                         ▼
           { results: {nodeId:{inputs,outputs,status,error}}, final }
 ```
+- **Live status:** `/pipelines/run/stream` streams per-node progress via **SSE** (plain HTTP, not
+  WebSockets). The running node **lights up** on the canvas; finished nodes show green/grey/red dots.
+  `run_pipeline` (non-stream `/pipelines/run`) still exists for tests/simple use.
 - **Orchestrator is dumb + deterministic; nodes are smart.** Each node = `execute(inputs, config) -> outputs`, registered via `@register("type")`.
 - AI lives inside nodes over the HF Inference API; **Chroma = one collection per document** (RAG).
 

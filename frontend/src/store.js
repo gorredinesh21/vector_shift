@@ -37,6 +37,13 @@ export const useStore = create((set, get) => ({
     setRunStatus: (runStatus) => set({ runStatus }),
     setRunResults: (runResults, runFinal = {}) => set({ runResults, runFinal }),
     clearRun: () => set({ runStatus: 'idle', runResults: {}, runFinal: {} }),
+    // live per-node status update (from the streaming run)
+    setNodeRunStatus: (id, status, result = null) => set((s) => {
+      const prev = s.runResults[id] || { inputs: {}, outputs: {} };
+      const next = result ? { ...result } : { ...prev };
+      next.status = status;
+      return { runResults: { ...s.runResults, [id]: next } };
+    }),
 
     // ── history ──────────────────────────────────────────────────────────
     // record the current graph before a structural change so it can be undone

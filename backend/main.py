@@ -1,14 +1,17 @@
 from collections import defaultdict, deque
 from typing import List
 
+import json
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
 import config
 import db
 import nodes  # noqa: F401  (registers node executors)
-from engine.executor import run_pipeline
+from engine.executor import iter_run, run_pipeline
 from schemas import RunRequest, RunResponse, SavePipelineRequest
 
 app = FastAPI(title="VectorShift Pipeline API")
@@ -82,6 +85,33 @@ def run(req: RunRequest):
     status = "error" if any(r["status"] == "error" for r in results.values()) else "done"
     db.save_run(results, status)
     return {"results": results, "final": final}
+
+
+@app.post("/pipelines/run/stream")
+def run_stream(req: RunRequest):
+    """Same as /run, but streams live per-node progress as Server-Sent Events.
+
+    Emits `data: {json}\\n\\n` lines: node_start (a node began), node (finished,
+    with status+result), and complete (full results + final). Not WebSockets —
+    plain HTTP streaming.
+    """
+    def gen():
+        completed = None
+        for ev in iter_run(req.nodes, req.edges):
+            if ev["event"] == "complete":
+                completed = ev
+            yield f"data: {json.dumps(ev)}\n\n"
+        if completed:
+            status = "error" if any(
+                r["status"] == "error" for r in completed["results"].values()
+            ) else "done"
+            db.save_run(completed["results"], status)
+
+    return StreamingResponse(
+        gen(),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+    )
 
 
 # ── Persistence: save / load pipelines, run history ─────────────────────────
