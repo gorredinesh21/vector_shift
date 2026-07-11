@@ -11,6 +11,15 @@ async function post(path, body) {
   return res.json();
 }
 
+async function get(path) {
+  const res = await fetch(`${BASE}${path}`);
+  if (!res.ok) throw new Error(`Server responded with ${res.status}`);
+  return res.json();
+}
+
+// list saved contexts/DBs (for the Context Search "existing DB" dropdown)
+export const getContexts = () => get('/contexts');
+
 // Part 4: node/edge count + DAG check
 export const parsePipeline = (nodes, edges) => post('/pipelines/parse', { nodes, edges });
 

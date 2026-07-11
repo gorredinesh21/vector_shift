@@ -1,5 +1,6 @@
-"""Embeddings over the Hugging Face Inference API (feature-extraction)."""
+"""Embeddings over the Hugging Face Inference API (feature-extraction), with retry."""
 import logging
+import time
 
 import config
 from errors import EmbeddingError
@@ -27,10 +28,28 @@ def _mean_pool(vec):
     """HF may return token-level embeddings (2D) or a sentence vector (1D)."""
     if not vec:
         return []
-    if isinstance(vec[0], (list, tuple)):  # 2D -> mean over tokens
+    if isinstance(vec[0], (list, tuple)):
         cols = len(vec[0])
         return [sum(row[i] for row in vec) / len(vec) for i in range(cols)]
     return list(vec)
+
+
+def _with_retry(fn, *, attempts: int = 4, base_delay: float = 2.0):
+    last = None
+    for i in range(attempts):
+        try:
+            return fn()
+        except Exception as exc:  # noqa: BLE001
+            last = exc
+            msg = str(exc).lower()
+            if any(k in msg for k in ("loading", "503", "timeout", "429")):
+                delay = base_delay * (2 ** i)
+                print(f"[hf] embed transient error ({str(exc)[:80]}); retry in {delay:.0f}s "
+                      f"({i + 1}/{attempts})", flush=True)
+                time.sleep(delay)
+                continue
+            break
+    raise EmbeddingError(f"Embedding failed: {last}")
 
 
 def embed(texts: list[str], *, model: str | None = None) -> list[list[float]]:
@@ -40,12 +59,10 @@ def embed(texts: list[str], *, model: str | None = None) -> list[list[float]]:
     print(f"[hf] embedding {len(texts)} text(s) -> {model} ...", flush=True)
     out: list[list[float]] = []
     for t in texts:
-        try:
-            raw = client.feature_extraction(t, model=model)
-        except Exception as exc:  # noqa: BLE001
-            raise EmbeddingError(f"Embedding failed: {exc}") from exc
+        raw = _with_retry(lambda t=t: client.feature_extraction(t, model=model))
         vec = raw.tolist() if hasattr(raw, "tolist") else raw
         out.append(_mean_pool(vec))
+    print(f"[hf] embeddings ok ({len(out)} vectors)", flush=True)
     return out
 
 

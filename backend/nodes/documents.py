@@ -25,9 +25,13 @@ def context_builder_node(inputs: dict, config: dict) -> dict:
 
 @register("contextSearch")
 def context_search_node(inputs: dict, config: dict) -> dict:
-    """Retrieve the top-k most relevant chunks from a context for a query."""
-    collection = inputs.get("context")
-    query = inputs.get("query") or ""
+    """Retrieve the top-k most relevant chunks for a query.
+
+    The context can come from a wired Context Builder (input `context`) OR from a
+    saved DB selected in the node (config `contextId`). The wire takes precedence.
+    """
+    collection = inputs.get("context") or config.get("contextId")
+    query = inputs.get("query") or config.get("query") or ""
     if not collection or not query:
         return {"results": []}
     try:

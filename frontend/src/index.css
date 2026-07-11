@@ -378,6 +378,19 @@ input[type='checkbox'] { accent-color: var(--accent); width: 15px; height: 15px;
 
 .vs-textnode__area { min-height: 48px; max-height: 240px; }
 
+.vs-mini-btn {
+  align-self: flex-start;
+  font-family: inherit;
+  font-size: 0.8em;
+  color: var(--accent);
+  background: transparent;
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  padding: 3px 9px;
+  cursor: pointer;
+}
+.vs-mini-btn:hover { border-color: var(--accent); background: rgba(184, 50, 72, 0.06); }
+
 /* ── Handles + variable labels ───────────────────────────────────────────── */
 .react-flow__handle {
   width: 16px;

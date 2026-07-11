@@ -9,6 +9,7 @@
 // description: one-line explanation shown in tooltips + the in-app Node Guide.
 
 import { TextNodeBody } from './textNode';
+import { ContextSearchBody } from './ContextSearchBody';
 
 export const nodeDefinitions = [
   // ── Original 4, refactored onto the abstraction ────────────────────────────
@@ -136,16 +137,18 @@ export const nodeDefinitions = [
     title: 'Context Search',
     category: 'knowledge',
     icon: 'Search',
-    description: 'Retrieves the most relevant chunks from a context / vector store for a query (RAG retrieval).',
+    description: 'Retrieves the most relevant chunks for a query — from a wired Context Builder OR a saved DB you select here.',
     handles: [
       { id: 'context', type: 'target', side: 'left', label: 'context' },
       { id: 'query', type: 'target', side: 'left', label: 'query' },
       { id: 'results', type: 'source', side: 'right' },
     ],
+    // state init; the body is custom (existing-DB dropdown + top-K)
     fields: [
-      { name: 'topK', label: 'Results', kind: 'number', default: '5', min: 1, max: 20 },
-      { name: 'rerank', label: 'Rerank', kind: 'checkbox', default: false },
+      { name: 'contextId', default: '' },
+      { name: 'topK', default: '7' },
     ],
+    renderBody: (props) => <ContextSearchBody {...props} />,
   },
   {
     // Load a deal document (CIM, financials, contract...) into the pipeline.
