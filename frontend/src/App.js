@@ -1,14 +1,16 @@
 import { useState } from 'react';
-import { Workflow, BookOpen } from 'lucide-react';
+import { Workflow, BookOpen, FolderOpen } from 'lucide-react';
 import { PipelineToolbar } from './toolbar';
 import { PipelineUI } from './ui';
 import { SubmitButton } from './submit';
 import { RunButton } from './RunButton';
 import { HistoryControls } from './HistoryControls';
 import { NodeGuide } from './NodeGuide';
+import { PipelinesPanel } from './PipelinesPanel';
 
 function App() {
   const [guideOpen, setGuideOpen] = useState(false);
+  const [pipesOpen, setPipesOpen] = useState(false);
 
   return (
     <div className="vs-app">
@@ -29,6 +31,15 @@ function App() {
           >
             <BookOpen size={16} />
           </button>
+          <button
+            type="button"
+            className="vs-icon-btn"
+            onClick={() => setPipesOpen(true)}
+            title="Save / load pipelines"
+            aria-label="Pipelines"
+          >
+            <FolderOpen size={16} />
+          </button>
           <RunButton />
           <SubmitButton />
         </div>
@@ -41,6 +52,7 @@ function App() {
       <PipelineToolbar />
 
       {guideOpen && <NodeGuide onClose={() => setGuideOpen(false)} />}
+      {pipesOpen && <PipelinesPanel onClose={() => setPipesOpen(false)} />}
     </div>
   );
 }

@@ -76,6 +76,24 @@ export const useStore = create((set, get) => ({
       });
     },
 
+    // load a saved pipeline onto the canvas (reset history + run state, and
+    // rebuild the per-type id counters so new nodes don't collide with loaded ones)
+    setGraph: (nodes, edges) => {
+      const nodeIDs = {};
+      (nodes || []).forEach((nd) => {
+        const m = /^(.*)-(\d+)$/.exec(nd.id || '');
+        if (m) {
+          const t = m[1];
+          const n = parseInt(m[2], 10);
+          nodeIDs[t] = Math.max(nodeIDs[t] || 0, n);
+        }
+      });
+      set({
+        nodes: nodes || [], edges: edges || [], nodeIDs,
+        past: [], future: [],
+        runStatus: 'idle', runResults: {}, runFinal: {},
+      });
+    },
     getNodeID: (type) => {
         const newIDs = {...get().nodeIDs};
         if (newIDs[type] === undefined) {

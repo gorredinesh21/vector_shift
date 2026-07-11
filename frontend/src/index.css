@@ -210,6 +210,34 @@ code {
 .vs-io__error { margin: 0 0 12px; padding: 12px 14px; font-size: 13px; background: rgba(184, 50, 72, 0.1); border-radius: 10px; color: var(--accent-strong); white-space: pre-wrap; }
 .vs-io__empty { font-size: 14px; color: var(--text-muted); margin: 4px 0; }
 
+/* Pipelines save/load panel (reuses the .vs-io__overlay) */
+.vs-pipes {
+  width: min(520px, 92vw);
+  max-height: 82vh;
+  overflow: auto;
+  padding: 22px 24px;
+  background: var(--glass-bg-strong);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(80, 20, 35, 0.25);
+  animation: vs-pop 0.18s ease;
+}
+.vs-pipes__save { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+.vs-pipes__save .vs-input { flex: 1; }
+.vs-pipes__save .vs-submit__btn { display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+.vs-pipes__msg { font-size: 12px; color: var(--accent); margin-bottom: 8px; }
+.vs-pipes__list { list-style: none; margin: 6px 0 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.vs-pipes__item {
+  display: flex; align-items: center; gap: 9px; width: 100%;
+  padding: 10px 12px; font-family: inherit; font-size: 14px; color: var(--text);
+  background: var(--field-bg); border: 1px solid var(--glass-border);
+  border-radius: 10px; cursor: pointer; text-align: left;
+}
+.vs-pipes__item:hover { border-color: var(--accent); box-shadow: 0 4px 12px var(--accent-glow); }
+.vs-pipes__item svg { color: var(--accent); flex: none; }
+
 .vs-stage {
   flex: 1;
   min-height: 0;

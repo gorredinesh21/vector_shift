@@ -59,3 +59,5 @@ export async function runPipelineStream(nodes, edges, onEvent) {
 
 // Persistence
 export const savePipeline = (name, graph) => post('/pipelines', { name, graph });
+export const listPipelines = () => get('/pipelines');
+export const getPipeline = (id) => get(`/pipelines/${id}`);
