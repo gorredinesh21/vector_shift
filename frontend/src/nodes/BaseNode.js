@@ -39,10 +39,14 @@ export function BaseNode({ id, data, config }) {
     const el = rootRef.current;
     if (!el || typeof ResizeObserver === 'undefined') return;
     const ro = new ResizeObserver(() => {
-      const w = el.offsetWidth;
-      const h = el.offsetHeight;
-      const scale = Math.max(0.85, Math.min(Math.sqrt((w / BASE_W) * (h / BASE_H)), 2.6));
-      el.style.setProperty('--node-scale', scale.toFixed(3));
+      window.requestAnimationFrame(() => {
+        if (!rootRef.current) return;
+        const el = rootRef.current;
+        const w = el.offsetWidth;
+        const h = el.offsetHeight;
+        const scale = Math.max(0.85, Math.min(Math.sqrt((w / BASE_W) * (h / BASE_H)), 2.6));
+        el.style.setProperty('--node-scale', scale.toFixed(3));
+      });
     });
     ro.observe(el);
     return () => ro.disconnect();
@@ -107,13 +111,13 @@ export function BaseNode({ id, data, config }) {
         {config.renderBody
           ? config.renderBody({ id, data, values, setField })
           : (config.fields || []).map((f) => (
-              <NodeField
-                key={f.name}
-                field={f}
-                value={values[f.name]}
-                onChange={(val) => setField(f.name, val)}
-              />
-            ))}
+            <NodeField
+              key={f.name}
+              field={f}
+              value={values[f.name]}
+              onChange={(val) => setField(f.name, val)}
+            />
+          ))}
       </div>
 
       {Object.entries(handlesBySide).map(([side, handles]) =>
