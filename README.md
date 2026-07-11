@@ -72,7 +72,5 @@ cd frontend && npm install && npm start                                       # 
 ---
 
 ## Documentation
-- **`EXECUTION.md`** — what was delivered, how it was built, the abstraction method chosen (and why),
-  and the extra features added.
-- **`NODES.md`** — the node abstraction explained, how to add a node, and every node's purpose.
-- **`HANDOVER.md`** — running/testing notes and per-part status.
+- **`DOCUMENTATION.md`** — the complete technical write-up: architecture, how each part was solved,
+  the node abstraction, the execution engine (RAG / web research), extra features, and design decisions.

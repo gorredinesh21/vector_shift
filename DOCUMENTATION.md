@@ -256,11 +256,15 @@ don't always return clean output, `structured.py` **forces and defensively parse
 ---
 
 ## 10. Testing & verification
-- **Backend (`pytest`)** — engine (linear flow, branch-skip, error isolation, Output collection),
-  pure nodes (Text/Merge/IO), structured-output parsing, and the DAG endpoint over linear / diamond /
-  disconnected / cycle / self-loop graphs. **All pass.**
-- **Frontend (React Testing Library)** — the submit flow and the store's undo/redo. **All pass.**
-- **`check_models.py`** verifies which HF models the token can actually reach before running.
+During development the project was verified with automated tests (all passing):
+- **Backend (`pytest`)** — the engine (linear flow, branch-skipping, error isolation, Output
+  collection), pure nodes (Text/Merge/IO), structured-output parsing, and the DAG endpoint over
+  linear / diamond / disconnected / cycle / self-loop graphs.
+- **Frontend (React Testing Library)** — the submit flow and the store's undo/redo.
+- **`check_models.py`** confirms which HF models the token can actually reach before running.
+
+The end-to-end RAG pipeline (Document Loader → Context Builder → Context Search → LLM → Output) was
+also exercised manually against sample CIM PDFs.
 
 ---
 
