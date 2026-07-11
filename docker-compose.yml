@@ -1,0 +1,24 @@
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./backend/.env          # provides HF_TOKEN, HF_LLM_MODEL, HF_EMBED_MODEL
+    environment:
+      # override storage paths + CORS to container-friendly values (these win over .env)
+      - SQLITE_PATH=/data/vectorshift.db
+      - CHROMA_DIR=/data/chroma_store
+      - FRONTEND_ORIGIN=http://localhost:3000
+    volumes:
+      - backend_data:/data       # persist saved pipelines, run history, and vector stores
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:80"                # browser uses http://localhost:3000
+    depends_on:
+      - backend
+
+volumes:
+  backend_data:
